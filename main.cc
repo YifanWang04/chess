@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <thread>
 #include "board.h"
 #include "player.h"
 #include "textDisplay.h"
@@ -10,6 +11,13 @@
 using namespace std;
 
 const string validPieces = "PRNBQKprnbqk-";
+
+void refreshGraphDisplay(GraphDisplay *gd) {
+    while (true) {
+        gd->show();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
 
 int main() {
     Board* board = new Board();
@@ -21,6 +29,11 @@ int main() {
     bool gameRunning = false;
     int currentPlayerTurn = 0; // 0 for white, 1 for black
     bool defaultSetup = true;
+
+    gd->initBoard(); // Setup X11 display
+
+    // Launch a separate thread to handle GraphDisplay updates
+    std::thread graphDisplayThread(refreshGraphDisplay, gd);
 
     cout << "Starting game..." << endl;
     cout << "Select your game mode" << endl;
@@ -230,6 +243,7 @@ int main() {
             td = new TextDisplay();
             delete gd;
             gd = new GraphDisplay();
+            gd->setup(); // Setup X11 display
             string setupCmd;
             bool whiteKingExist = false;
             bool blackKingExist = false;
