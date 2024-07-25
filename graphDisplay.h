@@ -1,15 +1,14 @@
-#ifndef GRAPH_DISPLAY_H
-#define GRAPH_DISPLAY_H
+#ifndef GRAPHDISPLAY_H
+#define GRAPHDISPLAY_H
 
 #include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <string>
 
 class GraphDisplay {
     Display* display;
     Window window;
-    GC gc;
     int screen;
+    GC gc;
     int width;
     int height;
     int cellSize;
@@ -25,4 +24,4 @@ public:
     void show();
 };
 
-#endif // GRAPH_DISPLAY_H
+#endif

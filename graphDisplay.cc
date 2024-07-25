@@ -1,4 +1,4 @@
-#include "G\GraphDisplay.h"
+#include "graphDisplay.h"
 #include <iostream>
 
 GraphDisplay::GraphDisplay() {
@@ -25,17 +25,14 @@ GraphDisplay::~GraphDisplay() {
 }
 
 void GraphDisplay::initBoard() {
-    XSetForeground(display, gc, WhitePixel(display, screen));
-    XFillRectangle(display, window, gc, 0, 0, width, height);
-
     for (int row = 0; row < 8; ++row) {
         for (int col = 0; col < 8; ++col) {
             int x = col * cellSize;
-            int y = row * cellSize;  // Adjusted to ensure white pieces are at the bottom
+            int y = row * cellSize;
             if ((row + col) % 2 == 0) {
-                XSetForeground(display, gc, 0xEBECD0);
+                XSetForeground(display, gc, 0xEBECD0);  // Light color
             } else {
-                XSetForeground(display, gc, 0x739552);
+                XSetForeground(display, gc, 0x739552);  // Dark color
             }
             XFillRectangle(display, window, gc, x, y, cellSize, cellSize);
         }
@@ -44,7 +41,7 @@ void GraphDisplay::initBoard() {
 
 void GraphDisplay::notify(int row, int col, char piece) {
     int x = col * cellSize;
-    int y = row * cellSize;  // Adjusted for white pieces at the bottom
+    int y = (7 - row) * cellSize;  // Adjusted for white pieces at the bottom
 
     XFontStruct* font = XLoadQueryFont(display, "-*-helvetica-*-r-bold--24-*-*-*-*-*-*-*");
     if (!font) {
