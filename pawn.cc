@@ -1,5 +1,5 @@
-#include "Pawn.h"
-#include "Board.h"
+#include "pawn.h"
+#include "board.h"
 #include "piece.h"
 
 Pawn::Pawn(int row, int col, char symbol, int color)

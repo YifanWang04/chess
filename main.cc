@@ -1,10 +1,10 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include "Board.h"
-#include "Player.h"
-#include "TextDisplay.h"
-#include "ScoreBoard.h"
+#include "board.h"
+#include "player.h"
+#include "textDisplay.h"
+#include "scoreBoard.h"
 #include "graphDisplay.h"
 
 using namespace std;

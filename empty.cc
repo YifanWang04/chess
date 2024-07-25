@@ -1,5 +1,5 @@
-#include "Empty.h"
-#include "Board.h"
+#include "empty.h"
+#include "board.h"
 
 Empty::Empty(int row, int col, char symbol, int color)
     : Piece(row, col, '-', -1) {}

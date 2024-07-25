@@ -1,4 +1,4 @@
-#include "TextDisplay.h"
+#include "textDisplay.h"
 #include <iostream>
 
 TextDisplay::TextDisplay() {

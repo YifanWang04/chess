@@ -1,6 +1,6 @@
-#include "Piece.h"
-#include "Board.h"
-#include "TextDisplay.h" 
+#include "piece.h"
+#include "board.h"
+#include "textDisplay.h" 
 
 Piece::Piece(int row, int col, char symbol, int color)
     : row(row), col(col), symbol(symbol), color(color) {}

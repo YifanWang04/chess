@@ -1,5 +1,5 @@
-#include "Knight.h"
-#include "Board.h"
+#include "knight.h"
+#include "board.h"
 
 Knight::Knight(int row, int col, char symbol, int color)
     : Piece(row, col, symbol, color) {}
