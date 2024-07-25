@@ -1,12 +1,12 @@
-#ifndef LEVEL1_H
-#define LEVEL1_H
+// #ifndef LEVEL1_H
+// #define LEVEL1_H
 
-#include "computer.h"
+// #include "computer.h"
 
-class Level1 : public Computer {
-public:
-    Level1(int color) : Computer(color) {}
-    void makeMove(Board* board) override;
-};
+// class Level1 : public Computer {
+// public:
+//     Level1(int color) : Computer(color) {}
+//     void makeMove(Board* board) override;
+// };
 
-#endif // LEVEL1_H
+// #endif // LEVEL1_H
