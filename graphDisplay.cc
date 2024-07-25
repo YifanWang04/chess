@@ -31,7 +31,7 @@ void GraphDisplay::initBoard() {
     for (int row = 0; row < 8; ++row) {
         for (int col = 0; col < 8; ++col) {
             int x = col * cellSize;
-            int y = (7 - row) * cellSize; // Adjust y for white pieces at the bottom
+            int y = row * cellSize; // Adjusted for white pieces at the bottom
             if ((row + col) % 2 == 0) {
                 XSetForeground(display, gc, 0xEBECD0);
             } else {
@@ -44,9 +44,9 @@ void GraphDisplay::initBoard() {
 
 void GraphDisplay::notify(int row, int col, char piece) {
     int x = col * cellSize;
-    int y = (7 - row) * cellSize; // Adjust y for white pieces at the bottom
+    int y = (7 - row) * cellSize; // Adjusted for white pieces at the bottom
 
-    XFontStruct* font = XLoadQueryFont(display, "-*-helvetica-*-r-normal--24-*-*-*-*-*-*-*");
+    XFontStruct* font = XLoadQueryFont(display, "-*-helvetica-*-r-bold--24-*-*-*-*-*-*-*");
     if (!font) {
         std::cerr << "Unable to load font\n";
         exit(1);
@@ -63,7 +63,6 @@ void GraphDisplay::notify(int row, int col, char piece) {
     XDrawString(display, window, gc, x + cellSize / 2 - 5, y + cellSize / 2 + 5, s.c_str(), s.length());
     XFreeFont(display, font);
 }
-
 
 void GraphDisplay::clear() {
     XClearWindow(display, window);

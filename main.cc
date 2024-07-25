@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <thread>
 #include "board.h"
 #include "player.h"
 #include "textDisplay.h"
@@ -11,13 +10,6 @@
 using namespace std;
 
 const string validPieces = "PRNBQKprnbqk-";
-
-void refreshGraphDisplay(GraphDisplay *gd) {
-    while (true) {
-        gd->show();
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-}
 
 int main() {
     Board* board = new Board();
@@ -29,11 +21,6 @@ int main() {
     bool gameRunning = false;
     int currentPlayerTurn = 0; // 0 for white, 1 for black
     bool defaultSetup = true;
-
-    gd->initBoard(); // Setup X11 display
-
-    // Launch a separate thread to handle GraphDisplay updates
-    std::thread graphDisplayThread(refreshGraphDisplay, gd);
 
     cout << "Starting game..." << endl;
     cout << "Select your game mode" << endl;
@@ -54,10 +41,21 @@ int main() {
             iss >> white >> black;
             cout << "Setting up game: " << white << " vs " << black << endl;
 
-            if (white == "human" && black == "human") {
-                whitePlayer = new Player(0);
+            if ((white == "human" || white.substr(0, 8) == "computer") && (black == "human" || black.substr(0, 8) == "computer")) {
+                if (white == "human") {
+                    whitePlayer = new Player(0);
+                } else {
+                    int level = stoi(white.substr(8));
+                    whitePlayer = new ComputerPlayer(0, level); // Assuming ComputerPlayer class is implemented
+                }
                 board->player1 = whitePlayer;
-                blackPlayer = new Player(1);
+
+                if (black == "human") {
+                    blackPlayer = new Player(1);
+                } else {
+                    int level = stoi(black.substr(8));
+                    blackPlayer = new ComputerPlayer(1, level); // Assuming ComputerPlayer class is implemented
+                }
                 board->player2 = blackPlayer;
 
                 if (defaultSetup) { 
@@ -78,9 +76,9 @@ int main() {
                 }
                 gd->show();
             } else {
-                cout << "Currently only human vs human is supported." << endl;
+                cout << "Currently only human vs human and human vs computer[1-4] is supported." << endl;
             }
-             
+
         } else if (cmd == "resign") {
             if (!gameRunning) {
                 cout << "No game is currently running." << endl;
@@ -95,7 +93,7 @@ int main() {
                 scoreboard.endGame("White");
             }
             gameRunning = false;
-            
+
         } else if (cmd == "move") {
             if (!gameRunning) {
                 cout << "No game is currently running. You can't move" << endl;
@@ -103,7 +101,14 @@ int main() {
             }
 
             string from, to, promoteTo;
-            iss >> from >> to >> promoteTo;
+            if (!(iss >> from >> to >> promoteTo)) {
+                if (currentPlayerTurn == 0 && dynamic_cast<ComputerPlayer*>(whitePlayer)) {
+                    dynamic_cast<ComputerPlayer*>(whitePlayer)->makeMove(board, td, gd);
+                } else if (currentPlayerTurn == 1 && dynamic_cast<ComputerPlayer*>(blackPlayer)) {
+                    dynamic_cast<ComputerPlayer*>(blackPlayer)->makeMove(board, td, gd);
+                }
+                continue;
+            }
 
             int fromRow = from[1] - '1';
             int fromCol = from[0] - 'a';
@@ -221,12 +226,12 @@ int main() {
                 if (board->inCheckmate(currentPlayerTurn)) {
                     scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
                     gameRunning = false;
-                } 
+                }
                 if (board->inStalemate(currentPlayerTurn)) {
                     scoreboard.endGame();
                     gameRunning = false;
                 }
-                
+
             } else {
                 cout << "Move is not valid for this piece" << endl;
                 continue;
@@ -243,7 +248,6 @@ int main() {
             td = new TextDisplay();
             delete gd;
             gd = new GraphDisplay();
-            gd->initBoard(); // Setup X11 display
             string setupCmd;
             bool whiteKingExist = false;
             bool blackKingExist = false;
@@ -263,14 +267,14 @@ int main() {
                     int col = position[0] - 'a';
                     // check out of bound
                     if (row < 0 || row >= 8 || col < 0 || col >= 8) {
-                      cout << "the setup position is out of bound" << endl;
-                      continue;
+                        cout << "the setup position is out of bound" << endl;
+                        continue;
                     }
 
                     // check valid piece
                     if (validPieces.find(piece) == string::npos) {
-                      cout << "the piece is invalid" << endl;
-                      continue;
+                        cout << "the piece is invalid" << endl;
+                        continue;
                     }
 
                     // check if the position already exists a piece
@@ -284,7 +288,7 @@ int main() {
                         cout << "Pawns cannot be placed on the first or last row." << endl;
                         continue;
                     }
-                    
+
                     // check king
                     if (piece == 'k' && !blackKingExist) {
                         blackKingExist = true;
@@ -366,6 +370,8 @@ int main() {
     delete board;
     delete whitePlayer;
     delete blackPlayer;
+    delete td;
+    delete gd;
 
     return 0;
 }
