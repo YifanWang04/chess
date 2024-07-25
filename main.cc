@@ -243,7 +243,7 @@ int main() {
             td = new TextDisplay();
             delete gd;
             gd = new GraphDisplay();
-            gd->setup(); // Setup X11 display
+            gd->initBoard(); // Setup X11 display
             string setupCmd;
             bool whiteKingExist = false;
             bool blackKingExist = false;
