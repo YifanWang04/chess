@@ -1,15 +1,15 @@
-#ifndef COMPUTERPLAYER_H
-#define COMPUTERPLAYER_H
+// #ifndef COMPUTERPLAYER_H
+// #define COMPUTERPLAYER_H
 
-#include "player.h"
+// #include "player.h"
 
-class ComputerPlayer : public Player {
-public:
-    ComputerPlayer(int color, int level);
-    void makeMove(Board* board) override;
-private:
-    int level;
+// class ComputerPlayer : public Player {
+// public:
+//     ComputerPlayer(int color, int level);
+//     void makeMove(Board* board) override;
+// private:
+//     int level;
     
-};
+// };
 
-#endif
+// #endif
