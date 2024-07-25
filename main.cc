@@ -168,6 +168,7 @@ int main() {
                 gd->notify(fromRow, fromCol, '-');
                 gd->notify((board->getPiece(toRow, toCol)->getSymbol() == 'P') ? toRow - 1 : toRow + 1, toCol, '-');
                 cout << *td;
+                gd->show();
                 currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
                 board->inCheck(currentPlayerTurn);
                 if (board->inCheckmate(currentPlayerTurn)) {
@@ -199,6 +200,7 @@ int main() {
                 gd->notify(fromRow, fromCol, '-');
 
                 cout << *td;
+                gd->show();
                 currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
                 board->inCheck(currentPlayerTurn);
 
@@ -233,6 +235,7 @@ int main() {
             bool blackKingExist = false;
             cout << "enter setup mode" << endl;
             cout << *td;
+            gd->show();
             while (getline(cin, setupCmd)) {
                 istringstream setupIss(setupCmd);
                 string setup;
@@ -277,6 +280,7 @@ int main() {
                         td->notify(row, col, piece);
                         gd->notify(row, col, piece);
                         cout << *td;
+                        gd->show();
                     } else if (piece == 'K' && !whiteKingExist) {
                         whiteKingExist = true;
                         board->pieces[row][col] = board->createPiece('K', row, col);
@@ -284,12 +288,14 @@ int main() {
                         td->notify(row, col, piece);
                         gd->notify(row, col, piece);
                         cout << *td;
+                        gd->show();
                     } else if (piece != 'k' && piece != 'K') {
                         board->pieces[row][col] = board->createPiece(piece, row, col);
                         // notify display
                         td->notify(row, col, piece);
                         gd->notify(row, col, piece);
                         cout << *td;
+                        gd->show();
                     } else {
                         cout << "Only one King is allowed per color." << endl;
                     }
@@ -309,6 +315,7 @@ int main() {
                     td->notify(row, col, '-');
                     gd->notify(row, col, '-');
                     cout << *td;
+                    gd->show();
 
                 } else if (setup == "=") {
                     string color;

@@ -43,12 +43,10 @@ void GraphDisplay::initBoard() {
 }
 
 void GraphDisplay::notify(int row, int col, char piece) {
-    initBoard();
-
     int x = col * cellSize;
-    int y = (7 - row) * cellSize;
+    int y = row * cellSize;  // Adjusted for white pieces at the bottom
 
-    XFontStruct* font = XLoadQueryFont(display, "fixed");
+    XFontStruct* font = XLoadQueryFont(display, "-*-helvetica-*-r-normal--24-*-*-*-*-*-*-*");
     if (!font) {
         std::cerr << "Unable to load font\n";
         exit(1);
@@ -65,6 +63,7 @@ void GraphDisplay::notify(int row, int col, char piece) {
     XDrawString(display, window, gc, x + cellSize / 2 - 5, y + cellSize / 2 + 5, s.c_str(), s.length());
     XFreeFont(display, font);
 }
+
 
 void GraphDisplay::clear() {
     XClearWindow(display, window);
