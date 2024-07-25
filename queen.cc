@@ -1,5 +1,5 @@
-#include "Queen.h"
-#include "Board.h"
+#include "queen.h"
+#include "board.h"
 
 Queen::Queen(int row, int col, char symbol, int color)
     : Piece(row, col, symbol, color) {}

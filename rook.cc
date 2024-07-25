@@ -1,5 +1,5 @@
-#include "Rook.h"
-#include "Board.h"
+#include "rook.h"
+#include "board.h"
 
 Rook::Rook(int row, int col, char symbol, int color)
     : Piece(row, col, symbol, color), hasMoved(false) {}

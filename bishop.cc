@@ -1,5 +1,5 @@
-#include "Bishop.h"
-#include "Board.h"
+#include "bishop.h"
+#include "board.h"
 
 Bishop::Bishop(int row, int col, char symbol, int color)
     : Piece(row, col, symbol, color) {}

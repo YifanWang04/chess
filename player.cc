@@ -1,6 +1,6 @@
-#include "Player.h"
-#include "Board.h"
-#include "ScoreBoard.h"
+#include "player.h"
+#include "board.h"
+#include "scoreBoard.h"
 
 Player::Player(int color)
     : color(color), level(0), isPromotion(false), isInCheck(false),

@@ -3,8 +3,8 @@
 
 #include <iostream>
 #include <string>
-#include "ScoreBoard.h"
-#include "Board.h"
+#include "scoreBoard.h"
+#include "board.h"
 
 class Board; // Forward declaration
 

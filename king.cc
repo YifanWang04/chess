@@ -1,5 +1,5 @@
-#include "King.h"
-#include "Board.h"
+#include "king.h"
+#include "board.h"
 
 King::King(int row, int col, char symbol, int color)
     : Piece(row, col, symbol, color), hasMoved(false), isCheck(false) {}
