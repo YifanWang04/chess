@@ -11,11 +11,12 @@ private:
     Window window;
     int screen;
     GC gc;
-    unsigned long blackPixel, whitePixel;
+    unsigned long darkPixel, lightPixel;
     int width, height;
 
     void drawSquare(int row, int col, unsigned long color);
     void drawPiece(int row, int col, char piece);
+    unsigned long getColorPixel(const char* color);
 
 public:
     GraphDisplay(int width = 800, int height = 800);

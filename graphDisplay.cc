@@ -1,6 +1,17 @@
 #include "graphDisplay.h"
 #include <iostream>
 
+unsigned long GraphDisplay::getColorPixel(const char* color) {
+    Colormap colormap = DefaultColormap(display, screen);
+    XColor xcolor;
+    if (XParseColor(display, colormap, color, &xcolor) && XAllocColor(display, colormap, &xcolor)) {
+        return xcolor.pixel;
+    } else {
+        std::cerr << "Error: Unable to allocate color " << color << std::endl;
+        exit(1);
+    }
+}
+
 GraphDisplay::GraphDisplay(int width, int height) : width(width), height(height) {
     display = XOpenDisplay(nullptr);
     if (display == nullptr) {
@@ -8,15 +19,25 @@ GraphDisplay::GraphDisplay(int width, int height) : width(width), height(height)
         exit(1);
     }
     screen = DefaultScreen(display);
-    blackPixel = BlackPixel(display, screen);
-    whitePixel = WhitePixel(display, screen);
+    
+    darkPixel = getColorPixel("#739552");
+    lightPixel = getColorPixel("#EBECD0");
 
-    window = XCreateSimpleWindow(display, RootWindow(display, screen), 10, 10, width, height, 1, blackPixel, whitePixel);
+    window = XCreateSimpleWindow(display, RootWindow(display, screen), 10, 10, width, height, 1, darkPixel, lightPixel);
     XSelectInput(display, window, ExposureMask | KeyPressMask);
     XMapWindow(display, window);
 
     gc = XCreateGC(display, window, 0, nullptr);
-    XSetForeground(display, gc, blackPixel);
+    XSetForeground(display, gc, darkPixel);
+    XSetBackground(display, gc, lightPixel);
+
+    // ÉèÖÃ×ÖÌå
+    XFontStruct *font = XLoadQueryFont(display, "fixed");
+    if (!font) {
+        std::cerr << "Unable to load font 'fixed'" << std::endl;
+        exit(1);
+    }
+    XSetFont(display, gc, font->fid);
 }
 
 GraphDisplay::~GraphDisplay() {
@@ -33,7 +54,7 @@ void GraphDisplay::drawSquare(int row, int col, unsigned long color) {
 
     XSetForeground(display, gc, color);
     XFillRectangle(display, window, gc, x, y, squareWidth, squareHeight);
-    XSetForeground(display, gc, blackPixel);
+    XSetForeground(display, gc, darkPixel);
     XDrawRectangle(display, window, gc, x, y, squareWidth, squareHeight);
 }
 
@@ -48,7 +69,7 @@ void GraphDisplay::drawPiece(int row, int col, char piece) {
 }
 
 void GraphDisplay::notify(int row, int col, char piece) {
-    unsigned long color = (row + col) % 2 == 0 ? whitePixel : blackPixel;
+    unsigned long color = (row + col) % 2 == 0 ? lightPixel : darkPixel;
     drawSquare(row, col, color);
     if (piece != '-') {
         drawPiece(row, col, piece);
