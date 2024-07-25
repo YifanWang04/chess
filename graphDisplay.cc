@@ -1,4 +1,4 @@
-#include "GraphDisplay.h"
+#include "graphDisplay.h"
 #include <iostream>
 
 unsigned long GraphDisplay::getColorPixel(const char* color) {
