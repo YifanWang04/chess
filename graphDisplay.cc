@@ -1,4 +1,4 @@
-#include "GraphDisplay.h"
+#include "G\GraphDisplay.h"
 #include <iostream>
 
 GraphDisplay::GraphDisplay() {

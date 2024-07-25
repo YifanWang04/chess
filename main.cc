@@ -6,7 +6,7 @@
 #include "textDisplay.h"
 #include "scoreBoard.h"
 #include "graphDisplay.h"
-#include "computerPlayer.h" // 包含 ComputerPlayer 头文件
+// #include "computerPlayer.h" 
 
 using namespace std;
 
