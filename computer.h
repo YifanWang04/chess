@@ -1,12 +1,15 @@
-#ifndef COMPUTER_H
-#define COMPUTER_H
+#ifndef COMPUTERPLAYER_H
+#define COMPUTERPLAYER_H
 
 #include "player.h"
 
-class Computer : public Player {
+class ComputerPlayer : public Player {
 public:
-    Computer(int color) : Player(color) {}
-    virtual void makeMove(Board* board) = 0;
+    ComputerPlayer(int color, int level);
+    void makeMove(Board* board) override;
+private:
+    int level;
+    
 };
 
-#endif // COMPUTER_H
+#endif
