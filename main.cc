@@ -49,7 +49,7 @@ int main() {
 
                 if (defaultSetup) { 
                     board->setupBoard(td);
-                    board-setupBoard(gd);
+                    board->setupBoard(gd);
                 }
                 defaultSetup = true;  //set for next game
 
