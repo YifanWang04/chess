@@ -1,5 +1,7 @@
 #include "board.h"
 #include "player.h"
+#include "textDisplay.h"
+#include "graphDisplay.h"
 #include <iostream>
 
 // ctor
@@ -106,6 +108,57 @@ void Board::setupBoard(TextDisplay* td) {
     // blackKing = new King(7, 4, 'k', 1);
     // pieces[7][4] = blackKing;
 
+}
+
+void Board::setupBoard(GraphDisplay* gd) {
+    for (int i = 0; i < 8; ++i) {
+        pieces[1][i] = new Pawn(1, i, 'P', 0); // White pawns
+        pieces[6][i] = new Pawn(6, i, 'p', 1); // Black pawns
+        gd->notify(1, i, 'P');
+        gd->notify(6, i, 'p');
+    }
+
+    pieces[0][0] = new Rook(0, 0, 'R', 0);
+    pieces[0][7] = new Rook(0, 7, 'R', 0);
+    pieces[7][0] = new Rook(7, 0, 'r', 1);
+    pieces[7][7] = new Rook(7, 7, 'r', 1);
+    gd->notify(0, 0, 'R');
+    gd->notify(0, 7, 'R');
+    gd->notify(7, 0, 'r');
+    gd->notify(7, 7, 'r');
+
+    pieces[0][3] = new Queen(0, 3, 'Q', 0);
+    pieces[7][3] = new Queen(7, 3, 'q', 1);
+    gd->notify(0, 3, 'Q');
+    gd->notify(7, 3, 'q');
+
+    pieces[0][1] = new Knight(0, 1, 'N', 0);
+    pieces[0][6] = new Knight(0, 6, 'N', 0);
+    gd->notify(0, 1, 'N');
+    gd->notify(0, 6, 'N');
+
+    pieces[7][1] = new Knight(7, 1, 'n', 1);
+    pieces[7][6] = new Knight(7, 6, 'n', 1);
+    gd->notify(7, 1, 'n');
+    gd->notify(7, 6, 'n');
+
+    pieces[0][2] = new Bishop(0, 2, 'B', 0);
+    pieces[0][5] = new Bishop(0, 5, 'B', 0);
+    pieces[7][2] = new Bishop(7, 2, 'b', 1);
+    pieces[7][5] = new Bishop(7, 5, 'b', 1);
+    gd->notify(0, 2, 'B');
+    gd->notify(0, 5, 'B');
+    gd->notify(7, 2, 'b');
+    gd->notify(7, 5, 'b');
+
+    gd->notify(0, 4, 'K');
+    gd->notify(7, 4, 'k');
+
+    pieces[0][4] = new King(0, 4, 'K', 0);
+    whiteKing = dynamic_cast<King*>(pieces[0][4]);
+
+    pieces[7][4] = new King(7, 4, 'k', 1);
+    blackKing = dynamic_cast<King*>(pieces[7][4]);
 }
 
 

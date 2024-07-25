@@ -47,13 +47,16 @@ int main() {
                 blackPlayer = new Player(1);
                 board->player2 = blackPlayer;
 
-                if (defaultSetup) board->setupBoard(td);
+                if (defaultSetup) { 
+                    board->setupBoard(td);
+                    board-setupBoard(gd);
+                }
                 defaultSetup = true;  //set for next game
 
                 gameRunning = true;
                 currentPlayerTurn = 0; // Start with white player
                 cout << *td;
-                 gd->clear();
+                gd->clear();
                 // Notify all pieces to graphical display
                 for (int i = 0; i < 8; ++i) {
                     for (int j = 0; j < 8; ++j) {
@@ -222,6 +225,8 @@ int main() {
             board = new Board();
             delete td;
             td = new TextDisplay();
+            delete gd;
+            gd = new GraphDisplay();
             string setupCmd;
             bool whiteKingExist = false;
             bool blackKingExist = false;

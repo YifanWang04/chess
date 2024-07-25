@@ -12,6 +12,7 @@ private:
     int screen;
     GC gc;
     unsigned long darkPixel, lightPixel;
+    unsigned long blackPixel, whitePixel;
     int width, height;
 
     void drawSquare(int row, int col, unsigned long color);

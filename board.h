@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include "textDisplay.h"
+#include "graphDisplay.h"
 #include "piece.h"
 #include "king.h"
 #include "rook.h"
@@ -34,6 +35,7 @@ public:
     King* blackKing;
 
     void setupBoard(TextDisplay* td);
+    void setupBoard(GraphDisplay* gd);
     void copyBoard(const Board board);
     Piece* createPiece(char symbol, int row, int col);
     void makeMove(int row, int col, int newRow, int newCol);

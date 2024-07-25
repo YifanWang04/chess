@@ -1,4 +1,4 @@
-#include "graphDisplay.h"
+#include "GraphDisplay.h"
 #include <iostream>
 
 unsigned long GraphDisplay::getColorPixel(const char* color) {
@@ -22,6 +22,8 @@ GraphDisplay::GraphDisplay(int width, int height) : width(width), height(height)
     
     darkPixel = getColorPixel("#739552");
     lightPixel = getColorPixel("#EBECD0");
+    blackPixel = getColorPixel("#000000");
+    whitePixel = getColorPixel("#FFFFFF");
 
     window = XCreateSimpleWindow(display, RootWindow(display, screen), 10, 10, width, height, 1, darkPixel, lightPixel);
     XSelectInput(display, window, ExposureMask | KeyPressMask);
@@ -32,9 +34,9 @@ GraphDisplay::GraphDisplay(int width, int height) : width(width), height(height)
     XSetBackground(display, gc, lightPixel);
 
     // 设置字体
-    XFontStruct *font = XLoadQueryFont(display, "fixed");
+    XFontStruct *font = XLoadQueryFont(display, "-*-helvetica-bold-r-normal--34-*-*-*-p-*-iso8859-1");
     if (!font) {
-        std::cerr << "Unable to load font 'fixed'" << std::endl;
+        std::cerr << "Unable to load font 'helvetica bold 34'" << std::endl;
         exit(1);
     }
     XSetFont(display, gc, font->fid);
@@ -62,7 +64,14 @@ void GraphDisplay::drawPiece(int row, int col, char piece) {
     int squareWidth = width / 8;
     int squareHeight = height / 8;
     int x = col * squareWidth + squareWidth / 4;
-    int y = row * squareHeight + squareHeight / 4;
+    int y = row * squareHeight + 3 * squareHeight / 4;
+
+    // 根据棋子的颜色设置字体颜色
+    if (isupper(piece)) {
+        XSetForeground(display, gc, whitePixel);
+    } else {
+        XSetForeground(display, gc, blackPixel);
+    }
 
     std::string text(1, piece);
     XDrawString(display, window, gc, x, y, text.c_str(), text.length());
