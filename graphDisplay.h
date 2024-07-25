@@ -1,30 +1,28 @@
-#ifndef GRAPHDISPLAY_H
-#define GRAPHDISPLAY_H
+#ifndef GRAPH_DISPLAY_H
+#define GRAPH_DISPLAY_H
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <string>
 
 class GraphDisplay {
-private:
-    Display *display;
+    Display* display;
     Window window;
-    int screen;
     GC gc;
-    unsigned long darkPixel, lightPixel;
-    unsigned long blackPixel, whitePixel;
-    int width, height;
-
-    void drawSquare(int row, int col, unsigned long color);
-    void drawPiece(int row, int col, char piece);
-    unsigned long getColorPixel(const char* color);
+    int screen;
+    int width;
+    int height;
+    int cellSize;
+    const std::string whitePieces = "PRNBQK";
+    const std::string blackPieces = "prnbqk";
 
 public:
-    GraphDisplay(int width = 800, int height = 800);
+    GraphDisplay();
     ~GraphDisplay();
+    void initBoard();
     void notify(int row, int col, char piece);
     void clear();
     void show();
 };
 
-#endif // GRAPHDISPLAY_H
+#endif // GRAPH_DISPLAY_H

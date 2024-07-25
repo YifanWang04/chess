@@ -1,45 +1,21 @@
-#include "graphDisplay.h"
+#include "GraphDisplay.h"
 #include <iostream>
 
-unsigned long GraphDisplay::getColorPixel(const char* color) {
-    Colormap colormap = DefaultColormap(display, screen);
-    XColor xcolor;
-    if (XParseColor(display, colormap, color, &xcolor) && XAllocColor(display, colormap, &xcolor)) {
-        return xcolor.pixel;
-    } else {
-        std::cerr << "Error: Unable to allocate color " << color << std::endl;
-        exit(1);
-    }
-}
-
-GraphDisplay::GraphDisplay(int width, int height) : width(width), height(height) {
-    display = XOpenDisplay(nullptr);
-    if (display == nullptr) {
-        std::cerr << "Cannot open X display" << std::endl;
+GraphDisplay::GraphDisplay() {
+    display = XOpenDisplay(NULL);
+    if (display == NULL) {
+        std::cerr << "Cannot open display\n";
         exit(1);
     }
     screen = DefaultScreen(display);
-    
-    darkPixel = getColorPixel("#739552");
-    lightPixel = getColorPixel("#EBECD0");
-    blackPixel = getColorPixel("#000000");
-    whitePixel = getColorPixel("#FFFFFF");
-
-    window = XCreateSimpleWindow(display, RootWindow(display, screen), 10, 10, width, height, 1, darkPixel, lightPixel);
+    width = 800;
+    height = 800;
+    cellSize = width / 8;
+    window = XCreateSimpleWindow(display, RootWindow(display, screen), 10, 10, width, height, 1,
+                                 BlackPixel(display, screen), WhitePixel(display, screen));
     XSelectInput(display, window, ExposureMask | KeyPressMask);
     XMapWindow(display, window);
-
-    gc = XCreateGC(display, window, 0, nullptr);
-    XSetForeground(display, gc, darkPixel);
-    XSetBackground(display, gc, lightPixel);
-
-    // 设置字体
-    XFontStruct *font = XLoadQueryFont(display, "-*-helvetica-bold-r-normal--34-*-*-*-p-*-iso8859-1");
-    if (!font) {
-        std::cerr << "Unable to load font 'helvetica bold 34'" << std::endl;
-        exit(1);
-    }
-    XSetFont(display, gc, font->fid);
+    gc = XCreateGC(display, window, 0, NULL);
 }
 
 GraphDisplay::~GraphDisplay() {
@@ -48,41 +24,46 @@ GraphDisplay::~GraphDisplay() {
     XCloseDisplay(display);
 }
 
-void GraphDisplay::drawSquare(int row, int col, unsigned long color) {
-    int squareWidth = width / 8;
-    int squareHeight = height / 8;
-    int x = col * squareWidth;
-    int y = row * squareHeight;
+void GraphDisplay::initBoard() {
+    XSetForeground(display, gc, WhitePixel(display, screen));
+    XFillRectangle(display, window, gc, 0, 0, width, height);
 
-    XSetForeground(display, gc, color);
-    XFillRectangle(display, window, gc, x, y, squareWidth, squareHeight);
-    XSetForeground(display, gc, darkPixel);
-    XDrawRectangle(display, window, gc, x, y, squareWidth, squareHeight);
-}
-
-void GraphDisplay::drawPiece(int row, int col, char piece) {
-    int squareWidth = width / 8;
-    int squareHeight = height / 8;
-    int x = col * squareWidth + squareWidth / 4;
-    int y = row * squareHeight + 3 * squareHeight / 4;
-
-    // 根据棋子的颜色设置字体颜色
-    if (isupper(piece)) {
-        XSetForeground(display, gc, whitePixel);
-    } else {
-        XSetForeground(display, gc, blackPixel);
+    for (int row = 0; row < 8; ++row) {
+        for (int col = 0; col < 8; ++col) {
+            int x = col * cellSize;
+            int y = (7 - row) * cellSize;
+            if ((row + col) % 2 == 0) {
+                XSetForeground(display, gc, 0xEBECD0);
+            } else {
+                XSetForeground(display, gc, 0x739552);
+            }
+            XFillRectangle(display, window, gc, x, y, cellSize, cellSize);
+        }
     }
-
-    std::string text(1, piece);
-    XDrawString(display, window, gc, x, y, text.c_str(), text.length());
 }
 
 void GraphDisplay::notify(int row, int col, char piece) {
-    unsigned long color = (row + col) % 2 == 0 ? lightPixel : darkPixel;
-    drawSquare(row, col, color);
-    if (piece != '-') {
-        drawPiece(row, col, piece);
+    initBoard();
+
+    int x = col * cellSize;
+    int y = (7 - row) * cellSize;
+
+    XFontStruct* font = XLoadQueryFont(display, "fixed");
+    if (!font) {
+        std::cerr << "Unable to load font\n";
+        exit(1);
     }
+    XSetFont(display, gc, font->fid);
+
+    if (whitePieces.find(piece) != std::string::npos) {
+        XSetForeground(display, gc, WhitePixel(display, screen));
+    } else if (blackPieces.find(piece) != std::string::npos) {
+        XSetForeground(display, gc, BlackPixel(display, screen));
+    }
+
+    std::string s(1, piece);
+    XDrawString(display, window, gc, x + cellSize / 2 - 5, y + cellSize / 2 + 5, s.c_str(), s.length());
+    XFreeFont(display, font);
 }
 
 void GraphDisplay::clear() {
@@ -90,13 +71,5 @@ void GraphDisplay::clear() {
 }
 
 void GraphDisplay::show() {
-    XEvent e;
-    while (true) {
-        XNextEvent(display, &e);
-        if (e.type == Expose) {
-            // Redraw the board
-        } else if (e.type == KeyPress) {
-            break;
-        }
-    }
+    XFlush(display);
 }

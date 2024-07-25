@@ -139,6 +139,7 @@ int main() {
                     gd->notify(fromRow, rookFromCol, '-');
 
                     cout << *td;
+                    gd->show();
                     currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
                     board->inCheck(currentPlayerTurn);
                     if (board->inCheckmate(currentPlayerTurn)) {
