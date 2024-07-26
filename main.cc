@@ -282,7 +282,6 @@ int main() {
                     // check king
                     if (piece == 'k' && !blackKingExist) {
                         blackKingExist = true;
-                        board->createPiece('k', row, col);
                         board->pieces[row][col] = board->createPiece('k', row, col);
                         // notify display
                         td->notify(row, col, piece);
