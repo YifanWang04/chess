@@ -26,7 +26,7 @@ void Level2::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
                                 capturingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
                             // Check move
-                            else if (board->wouldPutInCheck(row, col, newRow, newCol)) {
+                            else if (board->willSelfBeInCheck(row, col, newRow, newCol)) {
                                 checkingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
                             // Other move

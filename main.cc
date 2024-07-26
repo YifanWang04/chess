@@ -66,7 +66,7 @@ int main() {
                 if (level == 1) {
                     blackPlayer = new Level1(1);
                 } else if (level == 2) {
-                    blackPlayer = new Level2(1)
+                    blackPlayer = new Level2(1);
                 }
                 // Add conditions for other levels if needed
             } else {
