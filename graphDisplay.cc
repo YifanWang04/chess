@@ -1,5 +1,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/xpm.h>
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -57,6 +58,21 @@ GraphDisplay::GraphDisplay(int width, int height): width(width), height(height) 
   XSynchronize(d,True);
 
   usleep(1000);
+
+  // Load piece images
+  loadPieceImage('P', "img/whitePawn.xpm");
+  loadPieceImage('R', "img/whiteRook.xpm");
+  loadPieceImage('N', "img/whiteKnight.xpm");
+  loadPieceImage('B', "img/whiteBishop.xpm");
+  loadPieceImage('Q', "img/whiteQueen.xpm");
+  loadPieceImage('K', "img/whiteKing.xpm");
+
+  loadPieceImage('p', "img/blackPawn.xpm");
+  loadPieceImage('r', "img/blackRook.xpm");
+  loadPieceImage('n', "img/blackKnight.xpm");
+  loadPieceImage('b', "img/blackBishop.xpm");
+  loadPieceImage('q', "img/blackQueen.xpm");
+  loadPieceImage('k', "img/blackKing.xpm");
 }
 
 GraphDisplay::~GraphDisplay() {
@@ -112,32 +128,10 @@ void GraphDisplay::notify(int row, int col, char piece) {
         fillRectangle(x, y, width / 8, height / 8, Dark);  // Dark color
     }
 
-    // Load font
-    XFontStruct* font = XLoadQueryFont(d, "-*-helvetica-*-r-bold--48-*-*-*-*-*-*-*");
-    if (!font) {
-        font = XLoadQueryFont(d, "fixed");
+    // Draw the piece image if it exists
+    if (piecePixmaps.find(piece) != piecePixmaps.end()) {
+        XCopyPlane(d, piecePixmaps[piece], w, gc, 0, 0, width / 8, height / 8, x, y, 1);
     }
-    if (!font) {
-        std::cerr << "Unable to load any font\n";
-        return;
-    }
-
-    XSetFont(d, gc, font->fid);
-
-    if (piece != '-') {
-        // Set the color for the piece
-        if (string("PRNBQK").find(piece) != std::string::npos) {
-            XSetForeground(d, gc, WhitePixel(d, s));
-        } else if (string("prnbqk").find(piece) != std::string::npos) {
-            XSetForeground(d, gc, BlackPixel(d, s));
-        }
-
-        // Draw the piece
-        string s(1, piece);
-        XDrawString(d, w, gc, x + (width / 16) - 12, y + (height / 16) + 12, s.c_str(), s.length());
-    }
-
-    XFreeFont(d, font);
 }
 
 void GraphDisplay::clear() {
@@ -153,4 +147,18 @@ void GraphDisplay::showAvailableFonts() {
   char** fnts = XListFonts(d, "*", 10000, &count);
 
   for (int i = 0; i < count; ++i) cout << fnts[i] << endl;
+}
+
+void GraphDisplay::loadPieceImage(char piece, const char* filepath) {
+    Pixmap pixmap, mask;
+    XpmAttributes attributes;
+    attributes.valuemask = XpmSize;
+
+    int status = XpmReadFileToPixmap(d, w, filepath, &pixmap, &mask, &attributes);
+    if (status == XpmSuccess) {
+        piecePixmaps[piece] = pixmap;
+        pieceMasks[piece] = mask;
+    } else {
+        cerr << "Failed to load image for piece " << piece << " from " << filepath << endl;
+    }
 }
