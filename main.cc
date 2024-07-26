@@ -43,30 +43,6 @@ int main() {
             iss >> white >> black;
             cout << "Setting up game: " << white << " vs " << black << endl;
 
-            delete board;
-            delete td;
-            delete gd;
-
-            if (defaultSetup) {
-                board = new Board();
-                td = new TextDisplay();
-                gd = new GraphDisplay();
-
-                board->setupBoard(td);
-                board->setupBoard(gd);
-            } else if (customizedBoard != nullptr) {
-                board = new Board(*customizedBoard);
-                td = new TextDisplay();
-                gd = new GraphDisplay();
-                
-                for (int i = 0; i < 8; ++i) {
-                    for (int j = 0; j < 8; ++j) {
-                        td->notify(i, j, board->getPiece(i, j)->getSymbol());
-                        gd->notify(i, j, board->getPiece(i, j)->getSymbol());
-                    }
-                }
-            }
-
             if (white == "human") {
                 whitePlayer = new Human(0);
             } else if (white.substr(0, 8) == "computer" && white.length() == 11 && isdigit(white[9])) {
@@ -93,8 +69,33 @@ int main() {
                 continue;
             }
 
+            delete board;
+            delete td;
+            delete gd;
+
+            if (defaultSetup) {
+                board = new Board();
+                td = new TextDisplay();
+                gd = new GraphDisplay();
+
+                board->setupBoard(td);
+                board->setupBoard(gd);
+            } else if (customizedBoard != nullptr) {
+                board = new Board(*customizedBoard);
+                td = new TextDisplay();
+                gd = new GraphDisplay();
+                
+                for (int i = 0; i < 8; ++i) {
+                    for (int j = 0; j < 8; ++j) {
+                        td->notify(i, j, board->getPiece(i, j)->getSymbol());
+                        gd->notify(i, j, board->getPiece(i, j)->getSymbol());
+                    }
+                }
+            }
+
             board->player1 = whitePlayer;
             board->player2 = blackPlayer;
+            
 
             gameRunning = true;
             currentPlayerTurn = 0; // Start with white player
@@ -277,24 +278,24 @@ int main() {
                 }
                 cout << "Moved" << endl;
 
-                // After human move, if it's computer's turn, make the move immediately
-                while (gameRunning && (dynamic_cast<Computer*>(currentPlayerTurn == 0 ? whitePlayer : blackPlayer))) {
-                    Player* currentPlayer = (currentPlayerTurn == 0) ? whitePlayer : blackPlayer;
-                    currentPlayer->computerMove(board, td, gd);
-                    currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
-                    board->inCheck(currentPlayerTurn);
+                // // After human move, if it's computer's turn, make the move immediately
+                // while (gameRunning && (dynamic_cast<Computer*>(currentPlayerTurn == 0 ? whitePlayer : blackPlayer))) {
+                //     Player* currentPlayer = (currentPlayerTurn == 0) ? whitePlayer : blackPlayer;
+                //     currentPlayer->computerMove(board, td, gd);
+                //     currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
+                //     board->inCheck(currentPlayerTurn);
 
-                    // Check for end conditions
-                    if (board->inCheckmate(currentPlayerTurn)) {
-                        scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
-                        gameRunning = false;
-                    }
-                    if (board->inStalemate(currentPlayerTurn)) {
-                        scoreboard.endGame();
-                        gameRunning = false;
-                    }
-                    cout << "Moved" << endl;
-                }
+                //     // Check for end conditions
+                //     if (board->inCheckmate(currentPlayerTurn)) {
+                //         scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
+                //         gameRunning = false;
+                //     }
+                //     if (board->inStalemate(currentPlayerTurn)) {
+                //         scoreboard.endGame();
+                //         gameRunning = false;
+                //     }
+                //     cout << "Moved" << endl;
+                // }
             }
         } else if (cmd == "setup") {
             if (gameRunning) {
