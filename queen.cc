@@ -8,22 +8,22 @@ Queen::~Queen() {}
 
 // paraphrase
 bool Queen::canMove(int newRow, int newCol, Board& board) {
-    // Checks if the target position is on the same col or same col or diagonal
-    if ((abs(col - newCol) != abs(row - newRow)) && (col != newCol && row != newRow)) {
+    // Check if the target position is on the same column, same row, or diagonal
+    if (!((abs(col - newCol) == abs(row - newRow)) || (col == newCol) || (row == newRow))) {
         return false;
     }
 
-    // Checks if pathway is blocked
-    if (col == newCol) { // col path
+    // Check if the pathway is blocked
+    if (col == newCol) { // column path
         int rowDirection = (newRow > row) ? 1 : -1;
-        for (int i = this->getRow() + rowDirection; i != newRow; i += rowDirection) {
+        for (int i = row + rowDirection; i != newRow; i += rowDirection) {
             if (board.getPiece(i, col)->getSymbol() != '-') {
                 return false;
             }
         }
     } else if (row == newRow) { // row path
         int colDirection = (newCol > col) ? 1 : -1;
-        for (int i = this->getCol() + colDirection; i != newCol; i += colDirection) {
+        for (int i = col + colDirection; i != newCol; i += colDirection) {
             if (board.getPiece(row, i)->getSymbol() != '-') {
                 return false;
             }
@@ -31,9 +31,9 @@ bool Queen::canMove(int newRow, int newCol, Board& board) {
     } else { // diagonal path
         int colDirection = (newCol > col) ? 1 : -1;
         int rowDirection = (newRow > row) ? 1 : -1;
-        int j = this->getRow() + rowDirection;
-        for (int i = this->getCol() + colDirection; i != newCol; i += colDirection) {
-            if (board.getPiece(j, i)->getSymbol() != ' ') {
+        int j = row + rowDirection;
+        for (int i = col + colDirection; i != newCol; i += colDirection) {
+            if (board.getPiece(j, i)->getSymbol() != '-') {
                 return false;
             }
             j += rowDirection;
