@@ -21,23 +21,30 @@ void Level3::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
                         if (board->isMoveable(row, col, newRow, newCol, board) && 
                             !board->willSelfBeInCheck(row, col, newRow, newCol)) {
                             
+                            // Temporarily make the move
+                            Piece* targetPiece = board->getPiece(newRow, newCol);
+                            Piece* movingPiece = board->getPiece(row, col);
+                            board->makeMove(row, col, newRow, newCol);
+
                             // Avoiding capture move
-                            if (!board->wouldBeCaptured(newRow, newCol)) {
+                            if (!movingPiece->isInDanger(*board)) {
                                 avoidingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
                             // Capture move
-                            if (board->getPiece(newRow, newCol)->getColor() != -1 && 
-                                board->getPiece(newRow, newCol)->getColor() != piece->getColor()) {
+                            if (targetPiece->getColor() != -1 && targetPiece->getColor() != piece->getColor()) {
                                 capturingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
                             // Check move
-                            else if (board->wouldPutInCheck(row, col, newRow, newCol)) {
+                            if (board->willCheckOpponent(newRow, newCol, movingPiece->getRow(), movingPiece->getCol())) {
                                 checkingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
                             // Other move
                             else {
                                 otherMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
+
+                            // Undo the move
+                            board->makeMove(newRow, newCol, row, col);
                         }
                     }
                 }
