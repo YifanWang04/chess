@@ -45,6 +45,9 @@ void Level3::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
 
                             // Undo the move
                             board->makeMove(newRow, newCol, row, col);
+
+                            // Restore the target piece to its original position
+                            board->pieces[newRow][newCol] = targetPiece;
                         }
                     }
                 }
