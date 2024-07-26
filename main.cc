@@ -53,7 +53,7 @@ int main() {
 
                     board->setupBoard(td);
                     board->setupBoard(gd);
-                    defaultSetup = true;  // set for next game
+                    defaultSetup = false;  // set for next game
                 }
 
                 whitePlayer = new Player(0);
@@ -76,9 +76,6 @@ int main() {
             } else {
                 cout << "Currently only human vs human is supported." << endl;
             }
-        }
-
-             
         } else if (cmd == "resign") {
             if (!gameRunning) {
                 cout << "No game is currently running." << endl;
@@ -93,7 +90,6 @@ int main() {
                 scoreboard.endGame("White");
             }
             gameRunning = false;
-            
         } else if (cmd == "move") {
             if (!gameRunning) {
                 cout << "No game is currently running. You can't move" << endl;
