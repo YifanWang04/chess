@@ -127,7 +127,10 @@ void GraphDisplay::notify(int row, int col, char piece) {
         XCopyArea(d, piecePixmaps[piece], w, gc, 0, 0, width / 8, height / 8, x, y);
         XSetClipMask(d, gc, None);
     }
+
+    XFlush(d); // Ensure the drawing operations are flushed and displayed
 }
+
 
 void GraphDisplay::clear() {
     XClearWindow(d, w);
