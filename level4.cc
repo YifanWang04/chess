@@ -72,20 +72,11 @@ int Level4::evaluateMove(Board* board, int fromRow, int fromCol, int toRow, int 
     // Avoid moving into danger
     Board tempBoard = *board;
     tempBoard.makeMove(fromRow, fromCol, toRow, toCol);
-    if (isKingInDanger(&tempBoard, getColor())) {
-        score -= 200;
-    }
-
-    // Prefer checks
-    if (board->willCheckOpponent(fromRow, fromCol, toRow, toCol)) {
-        score += 150;
+    if (tempBoard.inCheck(getColor())) {
+        score -= 100; // A smaller penalty to still consider this move if it captures a high value piece
     }
 
     return score;
-}
-
-bool Level4::isKingInDanger(Board* board, int color) {
-    return board->inCheck(color);
 }
 
 int Level4::getPieceValue(Piece* piece) {

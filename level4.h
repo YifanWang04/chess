@@ -13,7 +13,6 @@ public:
 private:
     std::vector<std::tuple<int, int, int, int>> getAllPossibleMoves(Board* board, int color);
     int evaluateMove(Board* board, int fromRow, int fromCol, int toRow, int toCol);
-    bool isKingInDanger(Board* board, int color);
     int getPieceValue(Piece* piece);
 };
 
