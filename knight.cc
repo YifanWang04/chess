@@ -18,14 +18,12 @@ bool Knight::canMove(int newRow, int newCol, Board& board) {
     else if ((abs(col - newCol) == 2 && abs(row - newRow) == 1) || (abs(col - newCol) == 1 && abs(row - newRow) == 2)) {
         if (board.getPiece(newRow, newCol)->getSymbol() != '-') 
         {   
-            cout << "pass1" << endl;
             if (board.getPiece(newRow, newCol)->getColor() == this->getColor()) 
             {
                 return false;
             }
         }
     }
-    cout << "pasS TREU" << endl;    
     return true;
 }
 

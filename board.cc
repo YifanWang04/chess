@@ -299,7 +299,7 @@ bool Board::isMoveable(int row, int col, int newRow, int newCol, Board* board) c
 
     // Check if moving to a position occupied by a friendly piece
     if (targetPiece->getColor() == currentPiece->getColor()) {
-        cout << "The target position is occupied by a friendly piece" << endl;
+        // cout << "The target position is occupied by a friendly piece" << endl;
         return false;
     }
 

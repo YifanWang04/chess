@@ -23,7 +23,6 @@ bool Pawn::canMove(int newRow, int newCol, Board& board) {
         if (this->getRow() == initialRow) {
             if (board.getPiece(newRow, newCol)->getSymbol() == '-' && 
                 board.getPiece(newRow - direction, newCol)->getSymbol() == '-') {
-                cout << "ready to return true" << endl;
                 return true; 
             }
         }
