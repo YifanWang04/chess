@@ -15,13 +15,21 @@ using namespace std;
 const string validPieces = "PRNBQKprnbqk-";
 
 int main() {
-    auto board = std::make_shared<Board>();
+    std::unique_ptr<Board> board = std::make_unique<Board>();
+    std::unique_ptr<TextDisplay> td = std::make_unique<TextDisplay>();
+    std::unique_ptr<GraphDisplay> gd = std::make_unique<GraphDisplay>(800, 800);
+
     std::shared_ptr<Board> customizedBoard = nullptr;
-    auto td = std::make_shared<TextDisplay>();
-    auto gd = std::make_shared<GraphDisplay>();
     ScoreBoard scoreboard;
-    std::shared_ptr<Player> whitePlayer = nullptr;
-    std::shared_ptr<Player> blackPlayer = nullptr;
+
+    std::shared_ptr<Player> whitePlayer = std::make_shared<Human>(0);
+    std::shared_ptr<Player> blackPlayer = std::make_shared<Human>(1);
+    board->player1 = whitePlayer;
+    board->player2 = blackPlayer;
+
+    board->setupBoard(td.get());
+    board->setupBoard(gd.get());
+
     bool gameRunning = false;
     int currentPlayerTurn = 0; // 0 for white, 1 for black
     bool defaultSetup = true;

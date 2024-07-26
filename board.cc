@@ -71,13 +71,10 @@ void Board::setupBoard(TextDisplay* td) {
     td->notify(7, 4, 'k');
 
     pieces[0][4] = new King(0, 4, 'K', 0);
-    whiteKing = dynamic_cast<King*>(pieces[0][4]);
-
     pieces[7][4] = new King(7, 4, 'k', 1);
-    blackKing = dynamic_cast<King*>(pieces[7][4]);
-
-    // blackKing = std::make_unique<King>(7, 4, 'k', 1);
-    // pieces[7][4] = blackKing;
+    
+    whiteKing = dynamic_cast<King*>(pieces[0][4].get());
+    blackKing = dynamic_cast<King*>(pieces[7][4].get());
 
 }
 
@@ -126,10 +123,10 @@ void Board::setupBoard(GraphDisplay* gd) {
     gd->notify(7, 4, 'k');
 
     pieces[0][4] = new King(0, 4, 'K', 0);
-    whiteKing = dynamic_cast<King*>(pieces[0][4]);
-
     pieces[7][4] = new King(7, 4, 'k', 1);
-    blackKing = dynamic_cast<King*>(pieces[7][4]);
+
+    whiteKing = dynamic_cast<King*>(pieces[0][4].get());
+    blackKing = dynamic_cast<King*>(pieces[7][4].get());
 }
 
 
@@ -146,11 +143,11 @@ std::unique_ptr<Piece> Board::createPiece(char type, int row, int col) {
         case 'q': return std::make_unique<Queen>(row, col, 'q', 1);
         case 'Q': return std::make_unique<Queen>(row, col, 'Q', 0);
         case 'k':
-            blackKing = std::make_unique<King>(row, col, 'k', 1);
-            return std::make_unique<King>(row, col, 'k', 1);
+            whiteKing = new King(row, col, 'k', 1);
+            return std::unique_ptr<King>(whiteKing);
         case 'K':
-            whiteKing = std::make_unique<King>(row, col, 'K', 0);
-            return std::make_unique<King>(row, col, 'K', 0);
+            blackKing = new King(row, col, 'K', 0);
+            return std::unique_ptr<King>(blackKing);
         default: return std::make_unique<Empty>(row, col, '-', -1);
     }
 }
