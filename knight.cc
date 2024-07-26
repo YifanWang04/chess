@@ -1,4 +1,3 @@
-#include <memory>
 #include "knight.h"
 #include "board.h"
 

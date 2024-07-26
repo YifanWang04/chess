@@ -1,4 +1,3 @@
-#include <memory>
 #ifndef BISHOP_H
 #define BISHOP_H
 

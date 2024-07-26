@@ -1,4 +1,3 @@
-#include <memory>
 #include "empty.h"
 #include "board.h"
 

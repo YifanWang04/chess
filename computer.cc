@@ -1,4 +1,3 @@
-#include <memory>
 #include "computer.h"
 
 Computer::Computer(int color, int level) : Player(color) {

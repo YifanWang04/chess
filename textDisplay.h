@@ -1,4 +1,3 @@
-#include <memory>
 #ifndef TEXTDISPLAY_H
 #define TEXTDISPLAY_H
 

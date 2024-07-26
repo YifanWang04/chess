@@ -1,4 +1,3 @@
-#include <memory>
 #ifndef EMPTY_H
 #define EMPTY_H
 

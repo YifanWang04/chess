@@ -1,4 +1,3 @@
-#include <memory>
 #include "bishop.h"
 #include "board.h"
 

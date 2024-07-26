@@ -1,4 +1,3 @@
-#include <memory>
 #ifndef KNIGHT_H
 #define KNIGHT_H
 

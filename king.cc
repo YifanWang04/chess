@@ -1,4 +1,3 @@
-#include <memory>
 #include "king.h"
 #include "board.h"
 

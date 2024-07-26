@@ -1,4 +1,3 @@
-#include <memory>
 #ifndef __GRAPH_DISPLAY_H__
 #define __GRAPH_DISPLAY_H__
 #include <X11/Xlib.h>
@@ -8,7 +7,7 @@
 #include <map>
 
 class GraphDisplay {
-  std::unique_ptr<Display> d;
+  Display *d;
   Window w;
   int s;
   GC gc;

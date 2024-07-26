@@ -1,29 +1,58 @@
-#include <memory>
 #include "board.h"
 #include "player.h"
 #include "textDisplay.h"
 #include "graphDisplay.h"
 #include <iostream>
  
-Board::Board() {
+// ctor
+Board::Board() : boardSize(8), player1(nullptr), player2(nullptr), pieces(new Piece**[8]), enPassantTarget({-1, -1}) {
+    // pieces = new Piece**[boardSize];
+    for (int i = 0; i < 8; ++i) {
+        pieces[i] = new Piece*[8];
+        for (int j = 0; j < 8; ++j) {
+            pieces[i][j] = new Empty(i, j, '-', -1);
+        }
+    }
+    // boardSize = 8; 
+    // player1 = nullptr; // Initialize players to nullptr or create Player objects if needed
+    // player2 = nullptr;
+    whiteKing = nullptr;
+    blackKing = nullptr;
+}
+
+// dtor
+Board::~Board() {
     for (int i = 0; i < 8; ++i) {
         for (int j = 0; j < 8; ++j) {
-            pieces[i][j] = std::make_unique<Empty>(i, j, '-', -1);
+            delete pieces[i][j];
+        }
+        delete[] pieces[i];
+    }
+    delete[] pieces;
+    delete player1;
+    delete player2;
+    // delete text;
+    whiteKing = nullptr;
+    blackKing = nullptr;
+}
+
+
+// copy ctor 
+Board::Board(const Board& other) : boardSize(other.boardSize), player1(nullptr), player2(nullptr), whiteKing(nullptr), blackKing(nullptr) {
+    pieces = new Piece**[boardSize];
+    for (int i = 0; i < boardSize; ++i) {
+        pieces[i] = new Piece*[boardSize];
+        for (int j = 0; j < boardSize; ++j) {
+            if (other.pieces[i][j]) {
+                pieces[i][j] = other.pieces[i][j]->clone();
+                if (pieces[i][j]->getSymbol() == 'K') whiteKing = dynamic_cast<King*>(pieces[i][j]);
+                if (pieces[i][j]->getSymbol() == 'k') blackKing = dynamic_cast<King*>(pieces[i][j]);
+            } else {
+                pieces[i][j] = nullptr;
+            }
         }
     }
 }
-
-Board::Board(const Board &other) {
-    for (int i = 0; i < 8; ++i) {
-        for (int j = 0; j < 8; ++j) {
-            pieces[i][j] = other.pieces[i][j]->clone();
-        }
-    }
-    whiteKing = dynamic_cast<King*>(pieces[0][4].get());
-    blackKing = dynamic_cast<King*>(pieces[7][4].get());
-}
-
-Board::~Board() = default;
 
 
 void Board::setupBoard(TextDisplay* td) {
@@ -71,10 +100,13 @@ void Board::setupBoard(TextDisplay* td) {
     td->notify(7, 4, 'k');
 
     pieces[0][4] = new King(0, 4, 'K', 0);
+    whiteKing = dynamic_cast<King*>(pieces[0][4]);
+
     pieces[7][4] = new King(7, 4, 'k', 1);
-    
-    whiteKing = dynamic_cast<King*>(pieces[0][4].get());
-    blackKing = dynamic_cast<King*>(pieces[7][4].get());
+    blackKing = dynamic_cast<King*>(pieces[7][4]);
+
+    // blackKing = new King(7, 4, 'k', 1);
+    // pieces[7][4] = blackKing;
 
 }
 
@@ -123,33 +155,45 @@ void Board::setupBoard(GraphDisplay* gd) {
     gd->notify(7, 4, 'k');
 
     pieces[0][4] = new King(0, 4, 'K', 0);
-    pieces[7][4] = new King(7, 4, 'k', 1);
+    whiteKing = dynamic_cast<King*>(pieces[0][4]);
 
-    whiteKing = dynamic_cast<King*>(pieces[0][4].get());
-    blackKing = dynamic_cast<King*>(pieces[7][4].get());
+    pieces[7][4] = new King(7, 4, 'k', 1);
+    blackKing = dynamic_cast<King*>(pieces[7][4]);
 }
 
 
-std::unique_ptr<Piece> Board::createPiece(char type, int row, int col) {
-    switch (type) {
-        case 'p': return std::make_unique<Pawn>(row, col, 'p', 1);
-        case 'P': return std::make_unique<Pawn>(row, col, 'P', 0);
-        case 'r': return std::make_unique<Rook>(row, col, 'r', 1);
-        case 'R': return std::make_unique<Rook>(row, col, 'R', 0);
-        case 'n': return std::make_unique<Knight>(row, col, 'n', 1);
-        case 'N': return std::make_unique<Knight>(row, col, 'N', 0);
-        case 'b': return std::make_unique<Bishop>(row, col, 'b', 1);
-        case 'B': return std::make_unique<Bishop>(row, col, 'B', 0);
-        case 'q': return std::make_unique<Queen>(row, col, 'q', 1);
-        case 'Q': return std::make_unique<Queen>(row, col, 'Q', 0);
-        case 'k':
-            whiteKing = new King(row, col, 'k', 1);
-            return std::unique_ptr<King>(whiteKing);
-        case 'K':
-            blackKing = new King(row, col, 'K', 0);
-            return std::unique_ptr<King>(blackKing);
-        default: return std::make_unique<Empty>(row, col, '-', -1);
+Piece* Board::createPiece(char symbol, int row, int col) {
+    Piece* newPiece = nullptr;
+    if (symbol == 'p') {
+        newPiece = new Pawn(row, col, 'p', 1);
+    } else if (symbol == 'P') {
+        newPiece = new Pawn(row, col, 'P', 0);
+    } else if (symbol == 'r') {
+        newPiece = new Rook(row, col, 'r', 1);
+    } else if (symbol == 'R') {
+        newPiece = new Rook(row, col, 'R', 0);
+    } else if (symbol == 'n') {
+        newPiece = new Knight(row, col, 'n', 1);
+    } else if (symbol == 'N') {
+        newPiece = new Knight(row, col, 'N', 0);
+    } else if (symbol == 'b') {
+        newPiece = new Bishop(row, col, 'b', 1);
+    } else if (symbol == 'B') {
+        newPiece = new Bishop(row, col, 'B', 0);
+    } else if (symbol == 'q') {
+        newPiece = new Queen(row, col, 'q', 1);
+    } else if (symbol == 'Q') {
+        newPiece = new Queen(row, col, 'Q', 0);
+    } else if (symbol == 'k') {
+        newPiece = new King(row, col, 'k', 1);
+        blackKing = dynamic_cast<King*>(newPiece);
+    } else if (symbol == 'K') {
+        newPiece = new King(row, col, 'K', 0);
+        whiteKing = dynamic_cast<King*>(newPiece);
+    } else if (symbol == '-') {
+        newPiece = new Empty(row, col, '-', -1);
     }
+    return newPiece;
 }
 
 
@@ -335,9 +379,10 @@ int Board::getBoardSize() const {
     return boardSize;
 }
 
-Piece* Board::getPiece(int row, int col) {
-    return pieces[row][col].get();
+Piece* Board::getPiece(int row, int col) const {
+    return pieces[row][col];
 }
+
 
 // Special Rules
 

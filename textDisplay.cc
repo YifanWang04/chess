@@ -1,4 +1,3 @@
-#include <memory>
 #include "textDisplay.h"
 #include <iostream>
 

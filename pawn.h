@@ -1,4 +1,3 @@
-#include <memory>
 #ifndef PAWN_H
 #define PAWN_H
 
