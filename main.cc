@@ -69,7 +69,7 @@ int main() {
 
             if (white == "human") {
                 whitePlayer = new Human(0);
-            } else if (white.substr(0, 8) == "computer" && white.length() == 10 && isdigit(white[9])) {
+            } else if (white.substr(0, 8) == "computer" && white.length() == 11 && isdigit(white[9])) {
                 int level = white[9] - '0';
                 if (level == 1) {
                     whitePlayer = new Level1(0);
@@ -82,7 +82,7 @@ int main() {
 
             if (black == "human") {
                 blackPlayer = new Human(1);
-            } else if (black.substr(0, 8) == "computer" && black.length() == 10 && isdigit(black[9])) {
+            } else if (black.substr(0, 8) == "computer" && black.length() == 11 && isdigit(black[9])) {
                 int level = black[9] - '0';
                 if (level == 1) {
                     blackPlayer = new Level1(1);
