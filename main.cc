@@ -13,6 +13,7 @@ const string validPieces = "PRNBQKprnbqk-";
 
 int main() {
     Board* board = new Board();
+    Board* customizedBoard = nullptr;
     TextDisplay *td = new TextDisplay();
     GraphDisplay *gd = new GraphDisplay();
     ScoreBoard scoreboard;
@@ -42,18 +43,28 @@ int main() {
             cout << "Setting up game: " << white << " vs " << black << endl;
 
             if (white == "human" && black == "human") {
-                if (defaultSetup) {
-                    delete board;
-                    delete td;
-                    delete gd;
+                delete board;
+                delete td;
+                delete gd;
 
+                if (defaultSetup) {
                     board = new Board();
                     td = new TextDisplay();
                     gd = new GraphDisplay();
 
                     board->setupBoard(td);
                     board->setupBoard(gd);
-                    defaultSetup = true;  // set for next game
+                } else if (customizedBoard != nullptr) {
+                    board = new Board(*customizedBoard);
+                    td = new TextDisplay();
+                    gd = new GraphDisplay();
+                    
+                    for (int i = 0; i < 8; ++i) {
+                        for (int j = 0; j < 8; ++j) {
+                            td->notify(i, j, board->getPiece(i, j)->getSymbol());
+                            gd->notify(i, j, board->getPiece(i, j)->getSymbol());
+                        }
+                    }
                 }
 
                 whitePlayer = new Player(0);
@@ -342,6 +353,7 @@ int main() {
                         cout << "A King is in Check!" << endl;
                         continue;
                     }
+                    customizedBoard = new Board(*board); // Save the customized board
                     cout << "Setup complete!" << endl;
                     defaultSetup = false;
                     break;
@@ -360,6 +372,7 @@ int main() {
     delete board;
     delete whitePlayer;
     delete blackPlayer;
+    delete customizedBoard;
 
     return 0;
 }
