@@ -93,6 +93,8 @@ int main() {
                 continue;
             }
 
+        }
+
 
             board->player1 = whitePlayer;
             board->player2 = blackPlayer;
@@ -131,7 +133,23 @@ int main() {
 
             Player* currentPlayer = (currentPlayerTurn == 0) ? whitePlayer : blackPlayer;
 
-            if (dynamic_cast<Human*>(currentPlayer)) {
+            if (dynamic_cast<Computer*>(currentPlayer)) {
+                currentPlayer->computerMove(board, td, gd);
+
+                currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
+                board->inCheck(currentPlayerTurn);
+
+                // Check for end conditions
+                if (board->inCheckmate(currentPlayerTurn)) {
+                    scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
+                    gameRunning = false;
+                } 
+                if (board->inStalemate(currentPlayerTurn)) {
+                    scoreboard.endGame();
+                    gameRunning = false;
+                }
+                cout << "Moved" << endl;
+            } else {
                 string from, to, promoteTo;
                 iss >> from >> to >> promoteTo;
 
