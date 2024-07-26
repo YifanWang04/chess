@@ -42,6 +42,14 @@ int main() {
             cout << "Setting up game: " << white << " vs " << black << endl;
 
             if (white == "human" && black == "human") {
+                delete board;
+                delete td;
+                delete gd;
+
+                board = new Board();
+                td = new TextDisplay();
+                gd = new GraphDisplay();
+                
                 whitePlayer = new Player(0);
                 board->player1 = whitePlayer;
                 blackPlayer = new Player(1);
@@ -137,7 +145,7 @@ int main() {
                     td->notify(fromRow, rookFromCol, '-');
 
                     gd->notify(fromRow, rookCol, board->getPiece(fromRow, rookCol)->getSymbol());
-                    gd->notify(fromRow, rookFromCol, '-');
+                    gd->notify(fromRow, fromCol, '-');
 
                     cout << *td;
                     gd->show();

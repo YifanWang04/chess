@@ -1,5 +1,5 @@
-#ifndef __GRAPH_DISPLAY_H__
-#define __GRAPH_DISPLAY_H__
+#ifndef GRAPH_DISPLAY_H
+#define GRAPH_DISPLAY_H
 #include <X11/Xlib.h>
 #include <X11/xpm.h>
 #include <iostream>

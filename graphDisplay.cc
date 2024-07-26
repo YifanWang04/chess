@@ -61,6 +61,12 @@ GraphDisplay::GraphDisplay(int width, int height): width(width), height(height) 
 }
 
 GraphDisplay::~GraphDisplay() {
+  for (auto &pair : piecePixmaps) {
+    XFreePixmap(d, pair.second);
+  }
+  for (auto &pair : pieceMasks) {
+    XFreePixmap(d, pair.second);
+  }
   XFreeGC(d, gc);
   XCloseDisplay(d);
 }
