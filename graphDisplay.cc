@@ -6,8 +6,6 @@
 #include <string>
 #include <sstream>
 #include <unistd.h>
-#include <vector>  // ÃÌº”’‚––
-
 #include "graphDisplay.h"
 
 using namespace std;
@@ -58,9 +56,6 @@ GraphDisplay::GraphDisplay(int width, int height): width(width), height(height) 
   XSetNormalHints(d, w, &hints);
 
   XSynchronize(d,True);
-
-  // Load all piece images at once
-  loadAllPieceImages();
 
   usleep(1000);
 }
@@ -124,7 +119,8 @@ void GraphDisplay::notify(int row, int col, char piece) {
         fillRectangle(x, y, width / 8, height / 8, Light);  // Dark color
     }
 
-    // Draw the piece image if it exists
+    // Load and draw the piece image if it exists
+    loadPieceImage(piece);
     if (piecePixmaps.find(piece) != piecePixmaps.end()) {
         XSetClipMask(d, gc, pieceMasks[piece]);
         XSetClipOrigin(d, gc, x, y);
@@ -149,18 +145,6 @@ void GraphDisplay::showAvailableFonts() {
   char** fnts = XListFonts(d, "*", 10000, &count);
 
   for (int i = 0; i < count; ++i) cout << fnts[i] << endl;
-}
-
-void GraphDisplay::loadAllPieceImages() {
-    // List of pieces to load
-    const std::vector<char> pieces = {
-        'P', 'R', 'N', 'B', 'Q', 'K',
-        'p', 'r', 'n', 'b', 'q', 'k'
-    };
-
-    for (char piece : pieces) {
-        loadPieceImage(piece);
-    }
 }
 
 void GraphDisplay::loadPieceImage(char piece) {
