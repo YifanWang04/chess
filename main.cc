@@ -128,6 +128,7 @@ int main() {
             if ((board->getPiece(fromRow, fromCol)->getSymbol() == 'K' || board->getPiece(fromRow, fromCol)->getSymbol() == 'k') &&
                 abs(toCol - fromCol) == 2) {
                 if (board->canCastle(fromRow, fromCol, toRow, toCol)) {
+                    
                     board->makeMove(fromRow, fromCol, toRow, toCol);
 
                     td->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());

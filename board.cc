@@ -3,7 +3,7 @@
 #include "textDisplay.h"
 #include "graphDisplay.h"
 #include <iostream>
-
+ 
 // ctor
 Board::Board() : boardSize(8), player1(nullptr), player2(nullptr), pieces(new Piece**[8]), enPassantTarget({-1, -1}) {
     // pieces = new Piece**[boardSize];
