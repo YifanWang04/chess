@@ -43,7 +43,8 @@ class GraphDisplay {
   // Prints the first 10000 available fonts
   void showAvailableFonts();
 
- // Loads a piece image
+ private:
+  // Loads a piece image
   void loadPieceImage(char piece, const char* filepath);
 };
 

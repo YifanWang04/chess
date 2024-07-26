@@ -130,7 +130,10 @@ void GraphDisplay::notify(int row, int col, char piece) {
 
     // Draw the piece image if it exists
     if (piecePixmaps.find(piece) != piecePixmaps.end()) {
-        XCopyPlane(d, piecePixmaps[piece], w, gc, 0, 0, width / 8, height / 8, x, y, 1);
+        XSetClipMask(d, gc, pieceMasks[piece]);
+        XSetClipOrigin(d, gc, x, y);
+        XCopyArea(d, piecePixmaps[piece], w, gc, 0, 0, width / 8, height / 8, x, y);
+        XSetClipMask(d, gc, None);
     }
 }
 
