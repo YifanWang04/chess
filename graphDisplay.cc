@@ -1,77 +1,133 @@
-#include "graphDisplay.h"
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <iostream>
+#include <cstdlib>
+#include <string>
+#include <sstream>
+#include <unistd.h>
+#include "graphDisplay.h"
 
-GraphDisplay::GraphDisplay() {
-    display = XOpenDisplay(NULL);
-    if (display == NULL) {
-        std::cerr << "Cannot open display\n";
-        exit(1);
-    }
-    screen = DefaultScreen(display);
-    width = 800;
-    height = 800;
-    cellSize = width / 8;
-    window = XCreateSimpleWindow(display, RootWindow(display, screen), 10, 10, width, height, 1,
-                                 BlackPixel(display, screen), WhitePixel(display, screen));
-    XSelectInput(display, window, ExposureMask | KeyPressMask);
-    XMapWindow(display, window);
-    gc = XCreateGC(display, window, 0, NULL);
+using namespace std;
+
+GraphDisplay::GraphDisplay(int width, int height): width(width), height(height) {
+
+  d = XOpenDisplay(NULL);
+  if (d == NULL) {
+    cerr << "Cannot open display" << endl;
+    exit(1);
+  }
+  s = DefaultScreen(d);
+  w = XCreateSimpleWindow(d, RootWindow(d, s), 11, 11, width, height, 1,
+                          BlackPixel(d, s), WhitePixel(d, s));
+  XSelectInput(d, w, ExposureMask | KeyPressMask);
+  XMapRaised(d, w);
+
+  Pixmap pix = XCreatePixmap(d,w,width,
+        height,DefaultDepth(d,DefaultScreen(d)));
+  gc = XCreateGC(d, pix, 0,(XGCValues *)0);
+
+  XFlush(d);
+  XFlush(d);
+
+  // Set up colours.
+  XColor xcolour;
+  Colormap cmap;
+  char color_vals[2][8]={"#EBECD0", "#739552"};
+
+  cmap=DefaultColormap(d,DefaultScreen(d));
+  for(int i=0; i < 2; ++i) {
+      if (!XParseColor(d,cmap,color_vals[i],&xcolour)) {
+         cerr << "Bad colour: " << color_vals[i] << endl;
+      }
+      if (!XAllocColor(d,cmap,&xcolour)) {
+         cerr << "Bad colour: " << color_vals[i] << endl;
+      }
+      colours[i]=xcolour.pixel;
+  }
+
+  XSetForeground(d,gc,colours[Dark]);
+
+  // Make window non-resizeable.
+  XSizeHints hints;
+  hints.flags = (USPosition | PSize | PMinSize | PMaxSize );
+  hints.height = hints.base_height = hints.min_height = hints.max_height = height;
+  hints.width = hints.base_width = hints.min_width = hints.max_width = width;
+  XSetNormalHints(d, w, &hints);
+
+  XSynchronize(d,True);
+
+  usleep(1000);
 }
 
 GraphDisplay::~GraphDisplay() {
-    XFreeGC(display, gc);
-    XDestroyWindow(display, window);
-    XCloseDisplay(display);
+  XFreeGC(d, gc);
+  XCloseDisplay(d);
+}
+
+void GraphDisplay::fillRectangle(int x, int y, int width, int height, int colour) {
+  XSetForeground(d, gc, colours[colour]);
+  XFillRectangle(d, w, gc, x, y, width, height);
+  XSetForeground(d, gc, colours[Dark]);
+}
+
+void GraphDisplay::drawString(int x, int y, string msg, int colour) {
+  XSetForeground(d, gc, colours[colour]);
+  XDrawString(d, w, gc, x, y, msg.c_str(), msg.length());
+  XSetForeground(d, gc, colours[Dark]);
+  XFlush(d);
 }
 
 void GraphDisplay::initBoard() {
     for (int row = 0; row < 8; ++row) {
         for (int col = 0; col < 8; ++col) {
-            int x = col * cellSize;
-            int y = row * cellSize;
+            int x = col * (width / 8);
+            int y = row * (height / 8);
             if ((row + col) % 2 == 0) {
-                XSetForeground(display, gc, 0xEBECD0);  // Light color
+                fillRectangle(x, y, width / 8, height / 8, Light);  // Light color
             } else {
-                XSetForeground(display, gc, 0x739552);  // Dark color
+                fillRectangle(x, y, width / 8, height / 8, Dark);  // Dark color
             }
-            XFillRectangle(display, window, gc, x, y, cellSize, cellSize);
         }
     }
 }
 
 void GraphDisplay::notify(int row, int col, char piece) {
-    int x = col * cellSize;
-    int y = (7 - row) * cellSize;  // Adjusted for white pieces at the bottom
+    int x = col * (width / 8);
+    int y = (7 - row) * (height / 8);  // Adjusted for white pieces at the bottom
 
-    // Try to load the preferred font
-    XFontStruct* font = XLoadQueryFont(display, "-*-helvetica-*-r-bold--24-*-*-*-*-*-*-*");
-    // If the preferred font is not available, try a fallback font
+    XFontStruct* font = XLoadQueryFont(d, "-*-helvetica-*-r-bold--24-*-*-*-*-*-*-*");
     if (!font) {
-        font = XLoadQueryFont(display, "fixed");
+        font = XLoadQueryFont(d, "fixed");
     }
-    // If no fonts are available, log an error and return
     if (!font) {
         std::cerr << "Unable to load any font\n";
         return;
     }
 
-    XSetFont(display, gc, font->fid);
+    XSetFont(d, gc, font->fid);
 
-    if (whitePieces.find(piece) != std::string::npos) {
-        XSetForeground(display, gc, WhitePixel(display, screen));
-    } else if (blackPieces.find(piece) != std::string::npos) {
-        XSetForeground(display, gc, BlackPixel(display, screen));
+    if (string("PNBRQK").find(piece) != std::string::npos) {
+        XSetForeground(d, gc, WhitePixel(d, s));
+    } else if (string("pnbrqk").find(piece) != std::string::npos) {
+        XSetForeground(d, gc, BlackPixel(d, s));
     }
 
-    std::string s(1, piece);
-    XDrawString(display, window, gc, x + cellSize / 2 - 5, y + cellSize / 2 + 5, s.c_str(), s.length());
-    XFreeFont(display, font);  // Free the font after use
+    string s(1, piece);
+    XDrawString(d, w, gc, x + (width / 16) - 5, y + (height / 16) + 5, s.c_str(), s.length());
+    XFreeFont(d, font);
 }
 
 void GraphDisplay::clear() {
-    XClearWindow(display, window);
+    XClearWindow(d, w);
 }
 
 void GraphDisplay::show() {
-    XFlush(display);
+    XFlush(d);
+}
+
+void GraphDisplay::showAvailableFonts() {
+  int count;
+  char** fnts = XListFonts(d, "*", 10000, &count);
+
+  for (int i = 0; i < count; ++i) cout << fnts[i] << endl;
 }
