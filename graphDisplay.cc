@@ -119,8 +119,7 @@ void GraphDisplay::notify(int row, int col, char piece) {
         fillRectangle(x, y, width / 8, height / 8, Dark);  // Dark color
     }
 
-    // Load and draw the piece image if it exists
-    loadPieceImage(piece);
+    // Draw the piece image if it exists
     if (piecePixmaps.find(piece) != piecePixmaps.end()) {
         XSetClipMask(d, gc, pieceMasks[piece]);
         XSetClipOrigin(d, gc, x, y);
