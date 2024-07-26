@@ -46,7 +46,7 @@ void GraphDisplay::notify(int row, int col, char piece) {
     XFontStruct* font = XLoadQueryFont(display, "-*-helvetica-*-r-bold--24-*-*-*-*-*-*-*");
     if (!font) {
         std::cerr << "Unable to load font\n";
-        exit(1);
+        return;  // Return if the font cannot be loaded
     }
     XSetFont(display, gc, font->fid);
 
@@ -58,7 +58,7 @@ void GraphDisplay::notify(int row, int col, char piece) {
 
     std::string s(1, piece);
     XDrawString(display, window, gc, x + cellSize / 2 - 5, y + cellSize / 2 + 5, s.c_str(), s.length());
-    XFreeFont(display, font);
+    XFreeFont(display, font);  // Free the font after use
 }
 
 void GraphDisplay::clear() {
