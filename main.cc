@@ -5,6 +5,7 @@
 #include "human.h"
 #include "level1.h"
 #include "level2.h"
+#include "level3.h"
 #include "textDisplay.h"
 #include "scoreBoard.h"
 #include "graphDisplay.h"
@@ -52,7 +53,10 @@ int main() {
                     whitePlayer = new Level1(0);
                 } else if (level == 2) {
                     whitePlayer = new Level2(0);
+                } else if (level == 3) {
+                    whitePlayer = new Level3(0);
                 }
+
             } else {
                 cout << "Invalid player type for white player. Must be 'human' or 'computer[1-4]'." << endl;
                 continue;
@@ -66,6 +70,8 @@ int main() {
                     blackPlayer = new Level1(1);
                 } else if (level == 2) {
                     blackPlayer = new Level2(1);
+                } else if (level == 3) {
+                    blackPlayer = new Level3(1);
                 }
             } else {
                 cout << "Invalid player type for black player. Must be 'human' or 'computer[1-4]'." << endl;
