@@ -1,7 +1,6 @@
 #ifndef __GRAPH_DISPLAY_H__
 #define __GRAPH_DISPLAY_H__
 #include <X11/Xlib.h>
-#include <X11/xpm.h>
 #include <iostream>
 #include <string>
 #include <map>
@@ -13,8 +12,6 @@ class GraphDisplay {
   GC gc;
   unsigned long colours[2];
   int width, height;
-  std::map<char, Pixmap> piecePixmaps; // Map to store piece images
-  std::map<char, Pixmap> pieceMasks;   // Map to store piece masks
 
  public:
   GraphDisplay(int width=800, int height=800);  // Constructor; displays the window.
@@ -42,10 +39,6 @@ class GraphDisplay {
 
   // Prints the first 10000 available fonts
   void showAvailableFonts();
-
- private:
-  // Loads a piece image
-  void loadPieceImage(char piece);
 };
 
 #endif

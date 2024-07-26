@@ -1,6 +1,5 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/xpm.h>
 #include <iostream>
 #include <cstdlib>
 #include <string>
@@ -61,12 +60,6 @@ GraphDisplay::GraphDisplay(int width, int height): width(width), height(height) 
 }
 
 GraphDisplay::~GraphDisplay() {
-  for (auto &pair : piecePixmaps) {
-    XFreePixmap(d, pair.second);
-  }
-  for (auto &pair : pieceMasks) {
-    XFreePixmap(d, pair.second);
-  }
   XFreeGC(d, gc);
   XCloseDisplay(d);
 }
@@ -114,23 +107,19 @@ void GraphDisplay::notify(int row, int col, char piece) {
 
     // Redraw the background color of the square
     if ((row + col) % 2 == 0) {
-        fillRectangle(x, y, width / 8, height / 8, Dark);  // Light color
+        fillRectangle(x, y, width / 8, height / 8, Light);  // Light color
     } else {
-        fillRectangle(x, y, width / 8, height / 8, Light);  // Dark color
+        fillRectangle(x, y, width / 8, height / 8, Dark);  // Dark color
     }
 
-    // Load and draw the piece image if it exists
-    loadPieceImage(piece);
-    if (piecePixmaps.find(piece) != piecePixmaps.end()) {
-        XSetClipMask(d, gc, pieceMasks[piece]);
-        XSetClipOrigin(d, gc, x, y);
-        XCopyArea(d, piecePixmaps[piece], w, gc, 0, 0, width / 8, height / 8, x, y);
-        XSetClipMask(d, gc, None);
+    // Draw the piece using text
+    if (piece != '-') {
+        string pieceStr(1, piece);
+        drawString(x + width / 16, y + height / 16 + 30, pieceStr);  // Center the text within the square
     }
 
     XFlush(d); // Ensure the drawing operations are flushed and displayed
 }
-
 
 void GraphDisplay::clear() {
     XClearWindow(d, w);
@@ -145,41 +134,4 @@ void GraphDisplay::showAvailableFonts() {
   char** fnts = XListFonts(d, "*", 10000, &count);
 
   for (int i = 0; i < count; ++i) cout << fnts[i] << endl;
-}
-
-void GraphDisplay::loadPieceImage(char piece) {
-    // Check if the piece image is already loaded
-    if (piecePixmaps.find(piece) != piecePixmaps.end()) {
-        return;
-    }
-
-    // Load the piece image
-    std::string filepath;
-    switch(piece) {
-        case 'P': filepath = "img/whitePawn.xpm"; break;
-        case 'R': filepath = "img/whiteRook.xpm"; break;
-        case 'N': filepath = "img/whiteKnight.xpm"; break;
-        case 'B': filepath = "img/whiteBishop.xpm"; break;
-        case 'Q': filepath = "img/whiteQueen.xpm"; break;
-        case 'K': filepath = "img/whiteKing.xpm"; break;
-        case 'p': filepath = "img/blackPawn.xpm"; break;
-        case 'r': filepath = "img/blackRook.xpm"; break;
-        case 'n': filepath = "img/blackKnight.xpm"; break;
-        case 'b': filepath = "img/blackBishop.xpm"; break;
-        case 'q': filepath = "img/blackQueen.xpm"; break;
-        case 'k': filepath = "img/blackKing.xpm"; break;
-        default: return;
-    }
-
-    Pixmap pixmap, mask;
-    XpmAttributes attributes;
-    attributes.valuemask = XpmSize;
-
-    int status = XpmReadFileToPixmap(d, w, filepath.c_str(), &pixmap, &mask, &attributes);
-    if (status == XpmSuccess) {
-        piecePixmaps[piece] = pixmap;
-        pieceMasks[piece] = mask;
-    } else {
-        cerr << "Failed to load image for piece " << piece << " from " << filepath << endl;
-    }
 }
