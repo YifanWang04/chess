@@ -99,7 +99,7 @@ void GraphDisplay::initBoard() {
         for (int col = 0; col < 8; ++col) {
             int x = col * (width / 8);
             int y = row * (height / 8);
-            if ((row + col) % 2 != 0) {
+            if ((row + col) % 2 == 0) {
                 fillRectangle(x, y, width / 8, height / 8, Light);  // Light color
             } else {
                 fillRectangle(x, y, width / 8, height / 8, Dark);  // Dark color
