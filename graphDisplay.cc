@@ -32,17 +32,17 @@ GraphDisplay::GraphDisplay(int width, int height): width(width), height(height) 
   // Set up colours.
   XColor xcolour;
   Colormap cmap;
-  char color_vals[2][8]={"#EBECD0", "#739552"};
+  char color_vals[2][8] = { "#EBECD0", "#739552" };
 
-  cmap=DefaultColormap(d,DefaultScreen(d));
-  for(int i=0; i < 2; ++i) {
-      if (!XParseColor(d, cmap, color_vals[i], &xcolour)) {
-         cerr << "Bad colour: " << color_vals[i] << endl;
-      }
-      if (!XAllocColor(d, cmap, &xcolour)) {
-         cerr << "Bad colour: " << color_vals[i] << endl;
-      }
-      colours[i] = xcolour.pixel;
+  cmap = DefaultColormap(d, DefaultScreen(d));
+  for (int i = 0; i < 2; ++i) {
+    if (!XParseColor(d, cmap, color_vals[i], &xcolour)) {
+      cerr << "Bad colour: " << color_vals[i] << endl;
+    }
+    if (!XAllocColor(d, cmap, &xcolour)) {
+      cerr << "Bad colour: " << color_vals[i] << endl;
+    }
+    colours[i] = xcolour.pixel;
   }
 
   XSetForeground(d, gc, colours[Dark]);
