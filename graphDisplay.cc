@@ -23,9 +23,8 @@ GraphDisplay::GraphDisplay(int width, int height): width(width), height(height) 
   XSelectInput(d, w, ExposureMask | KeyPressMask);
   XMapRaised(d, w);
 
-  Pixmap pix = XCreatePixmap(d,w,width,
-        height,DefaultDepth(d,DefaultScreen(d)));
-  gc = XCreateGC(d, pix, 0,(XGCValues *)0);
+  Pixmap pix = XCreatePixmap(d, w, width, height, DefaultDepth(d, DefaultScreen(d)));
+  gc = XCreateGC(d, pix, 0, (XGCValues *)0);
 
   XFlush(d);
   XFlush(d);
@@ -37,27 +36,28 @@ GraphDisplay::GraphDisplay(int width, int height): width(width), height(height) 
 
   cmap=DefaultColormap(d,DefaultScreen(d));
   for(int i=0; i < 2; ++i) {
-      if (!XParseColor(d,cmap,color_vals[i],&xcolour)) {
+      if (!XParseColor(d, cmap, color_vals[i], &xcolour)) {
          cerr << "Bad colour: " << color_vals[i] << endl;
       }
-      if (!XAllocColor(d,cmap,&xcolour)) {
+      if (!XAllocColor(d, cmap, &xcolour)) {
          cerr << "Bad colour: " << color_vals[i] << endl;
       }
-      colours[i]=xcolour.pixel;
+      colours[i] = xcolour.pixel;
   }
 
-  XSetForeground(d,gc,colours[Dark]);
+  XSetForeground(d, gc, colours[Dark]);
 
   // Make window non-resizeable.
   XSizeHints hints;
-  hints.flags = (USPosition | PSize | PMinSize | PMaxSize );
+  hints.flags = (USPosition | PSize | PMinSize | PMaxSize);
   hints.height = hints.base_height = hints.min_height = hints.max_height = height;
   hints.width = hints.base_width = hints.min_width = hints.max_width = width;
   XSetNormalHints(d, w, &hints);
 
-  XSynchronize(d,True);
+  XSynchronize(d, True);
 
-  usleep(1000);
+  // Load all piece images once
+  preLoadPieceImages();
 }
 
 GraphDisplay::~GraphDisplay() {
@@ -119,8 +119,7 @@ void GraphDisplay::notify(int row, int col, char piece) {
         fillRectangle(x, y, width / 8, height / 8, Dark);  // Dark color
     }
 
-    // Load and draw the piece image if it exists
-    loadPieceImage(piece);
+    // Draw the piece image if it exists
     if (piecePixmaps.find(piece) != piecePixmaps.end()) {
         XSetClipMask(d, gc, pieceMasks[piece]);
         XSetClipOrigin(d, gc, x, y);
@@ -144,28 +143,32 @@ void GraphDisplay::showAvailableFonts() {
   for (int i = 0; i < count; ++i) cout << fnts[i] << endl;
 }
 
-void GraphDisplay::loadPieceImage(char piece) {
+void GraphDisplay::preLoadPieceImages() {
+    // Preload all piece images
+    std::vector<std::pair<char, std::string>> pieces = {
+        {'P', "img/whitePawn.xpm"},
+        {'R', "img/whiteRook.xpm"},
+        {'N', "img/whiteKnight.xpm"},
+        {'B', "img/whiteBishop.xpm"},
+        {'Q', "img/whiteQueen.xpm"},
+        {'K', "img/whiteKing.xpm"},
+        {'p', "img/blackPawn.xpm"},
+        {'r', "img/blackRook.xpm"},
+        {'n', "img/blackKnight.xpm"},
+        {'b', "img/blackBishop.xpm"},
+        {'q', "img/blackQueen.xpm"},
+        {'k', "img/blackKing.xpm"}
+    };
+
+    for (const auto &piece : pieces) {
+        loadPieceImage(piece.first, piece.second);
+    }
+}
+
+void GraphDisplay::loadPieceImage(char piece, const std::string &filepath) {
     // Check if the piece image is already loaded
     if (piecePixmaps.find(piece) != piecePixmaps.end()) {
         return;
-    }
-
-    // Load the piece image
-    std::string filepath;
-    switch(piece) {
-        case 'P': filepath = "img/whitePawn.xpm"; break;
-        case 'R': filepath = "img/whiteRook.xpm"; break;
-        case 'N': filepath = "img/whiteKnight.xpm"; break;
-        case 'B': filepath = "img/whiteBishop.xpm"; break;
-        case 'Q': filepath = "img/whiteQueen.xpm"; break;
-        case 'K': filepath = "img/whiteKing.xpm"; break;
-        case 'p': filepath = "img/blackPawn.xpm"; break;
-        case 'r': filepath = "img/blackRook.xpm"; break;
-        case 'n': filepath = "img/blackKnight.xpm"; break;
-        case 'b': filepath = "img/blackBishop.xpm"; break;
-        case 'q': filepath = "img/blackQueen.xpm"; break;
-        case 'k': filepath = "img/blackKing.xpm"; break;
-        default: return;
     }
 
     Pixmap pixmap, mask;
