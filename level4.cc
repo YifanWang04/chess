@@ -3,41 +3,90 @@
 #include <vector>
 #include <tuple>
 #include <limits>
+#include <cstdlib>
+#include <ctime>
 
 Level4::Level4(int color) : Computer(color, 4) {}
 
-void Level4::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
-    std::vector<std::tuple<int, int, int, int>> allMoves = getAllPossibleMoves(board, getColor());
-    int bestValue = std::numeric_limits<int>::min();
-    std::tuple<int, int, int, int> bestMove;
+bool Level4::isSafeAfterMove(Board* board, int fromRow, int fromCol, int toRow, int toCol) {
+    Board testBoard(*board);
+    testBoard.makeMove(fromRow, fromCol, toRow, toCol);
+    return !testBoard.getPiece(toRow, toCol)->isInDanger(testBoard);
+}
 
-    for (auto move : allMoves) {
+void Level4::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
+    std::vector<std::tuple<int, int, int, int>> bestMoves;
+    std::vector<std::tuple<int, int, int, int>> capturingMoves;
+    std::vector<std::tuple<int, int, int, int>> checkingMoves;
+    std::vector<std::tuple<int, int, int, int>> safeMoves;
+    std::vector<std::tuple<int, int, int, int>> otherMoves;
+
+    for (int row = 0; row < 8; ++row) {
+        for (int col = 0; col < 8; ++col) {
+            Piece* piece = board->getPiece(row, col);
+            if (piece->getColor() == getColor()) {
+                for (int newRow = 0; newRow < 8; ++newRow) {
+                    for (int newCol = 0; newCol < 8; ++newCol) {
+                        if (board->isMoveable(row, col, newRow, newCol, board) && 
+                            !board->willSelfBeInCheck(row, col, newRow, newCol)) {
+                            int moveValue = evaluateMove(board, row, col, newRow, newCol);
+
+                            // Capture move and ensure it's safe
+                            if (board->getPiece(newRow, newCol)->getColor() != -1 && 
+                                board->getPiece(newRow, newCol)->getColor() != piece->getColor() &&
+                                isSafeAfterMove(board, row, col, newRow, newCol)) {
+                                capturingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
+                            }
+                            // Check move and ensure it's safe
+                            else if (board->willCheckOpponent(row, col, newRow, newCol) &&
+                                     isSafeAfterMove(board, row, col, newRow, newCol)) {
+                                checkingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
+                            }
+                            // Safe move
+                            else if (isSafeAfterMove(board, row, col, newRow, newCol)) {
+                                safeMoves.push_back(std::make_tuple(row, col, newRow, newCol));
+                            }
+                            // Other move
+                            else {
+                                otherMoves.push_back(std::make_tuple(row, col, newRow, newCol));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // 优先捕获高价值棋子的移动，然后是将军，安全的移动，最后是其他移动
+    if (!capturingMoves.empty()) {
+        bestMoves = capturingMoves;
+    } else if (!checkingMoves.empty()) {
+        bestMoves = checkingMoves;
+    } else if (!safeMoves.empty()) {
+        bestMoves = safeMoves;
+    } else {
+        bestMoves = otherMoves;
+    }
+
+    if (!bestMoves.empty()) {
+        std::srand(std::time(nullptr));
+        int moveIndex = std::rand() % bestMoves.size();
+        auto move = bestMoves[moveIndex];
+
         int fromRow = std::get<0>(move);
         int fromCol = std::get<1>(move);
         int toRow = std::get<2>(move);
         int toCol = std::get<3>(move);
 
-        int moveValue = evaluateMove(board, fromRow, fromCol, toRow, toCol);
+        board->makeMove(fromRow, fromCol, toRow, toCol);
+        td->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
+        td->notify(fromRow, fromCol, '-');
+        gd->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
+        gd->notify(fromRow, fromCol, '-');
 
-        if (moveValue > bestValue) {
-            bestValue = moveValue;
-            bestMove = move;
-        }
+        std::cout << *td;
+        gd->show();
     }
-
-    int fromRow = std::get<0>(bestMove);
-    int fromCol = std::get<1>(bestMove);
-    int toRow = std::get<2>(bestMove);
-    int toCol = std::get<3>(bestMove);
-
-    board->makeMove(fromRow, fromCol, toRow, toCol);
-    td->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
-    td->notify(fromRow, fromCol, '-');
-    gd->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
-    gd->notify(fromRow, fromCol, '-');
-
-    std::cout << *td;
-    gd->show();
 }
 
 std::vector<std::tuple<int, int, int, int>> Level4::getAllPossibleMoves(Board* board, int color) {
