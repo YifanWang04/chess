@@ -1,3 +1,4 @@
+#include <memory>
 #include "board.h"
 #include "player.h"
 #include "textDisplay.h"
@@ -29,9 +30,9 @@ Board::~Board() {
         delete[] pieces[i];
     }
     delete[] pieces;
-    delete player1;
-    delete player2;
-    // delete text;
+    
+    
+    // 
     whiteKing = nullptr;
     blackKing = nullptr;
 }
@@ -105,7 +106,7 @@ void Board::setupBoard(TextDisplay* td) {
     pieces[7][4] = new King(7, 4, 'k', 1);
     blackKing = dynamic_cast<King*>(pieces[7][4]);
 
-    // blackKing = new King(7, 4, 'k', 1);
+    // blackKing = std::make_unique<King>(7, 4, 'k', 1);
     // pieces[7][4] = blackKing;
 
 }
@@ -165,33 +166,33 @@ void Board::setupBoard(GraphDisplay* gd) {
 Piece* Board::createPiece(char symbol, int row, int col) {
     Piece* newPiece = nullptr;
     if (symbol == 'p') {
-        newPiece = new Pawn(row, col, 'p', 1);
+        newPiece = std::make_unique<Pawn>(row, col, 'p', 1);
     } else if (symbol == 'P') {
-        newPiece = new Pawn(row, col, 'P', 0);
+        newPiece = std::make_unique<Pawn>(row, col, 'P', 0);
     } else if (symbol == 'r') {
-        newPiece = new Rook(row, col, 'r', 1);
+        newPiece = std::make_unique<Rook>(row, col, 'r', 1);
     } else if (symbol == 'R') {
-        newPiece = new Rook(row, col, 'R', 0);
+        newPiece = std::make_unique<Rook>(row, col, 'R', 0);
     } else if (symbol == 'n') {
-        newPiece = new Knight(row, col, 'n', 1);
+        newPiece = std::make_unique<Knight>(row, col, 'n', 1);
     } else if (symbol == 'N') {
-        newPiece = new Knight(row, col, 'N', 0);
+        newPiece = std::make_unique<Knight>(row, col, 'N', 0);
     } else if (symbol == 'b') {
-        newPiece = new Bishop(row, col, 'b', 1);
+        newPiece = std::make_unique<Bishop>(row, col, 'b', 1);
     } else if (symbol == 'B') {
-        newPiece = new Bishop(row, col, 'B', 0);
+        newPiece = std::make_unique<Bishop>(row, col, 'B', 0);
     } else if (symbol == 'q') {
-        newPiece = new Queen(row, col, 'q', 1);
+        newPiece = std::make_unique<Queen>(row, col, 'q', 1);
     } else if (symbol == 'Q') {
-        newPiece = new Queen(row, col, 'Q', 0);
+        newPiece = std::make_unique<Queen>(row, col, 'Q', 0);
     } else if (symbol == 'k') {
-        newPiece = new King(row, col, 'k', 1);
+        newPiece = std::make_unique<King>(row, col, 'k', 1);
         blackKing = dynamic_cast<King*>(newPiece);
     } else if (symbol == 'K') {
-        newPiece = new King(row, col, 'K', 0);
+        newPiece = std::make_unique<King>(row, col, 'K', 0);
         whiteKing = dynamic_cast<King*>(newPiece);
     } else if (symbol == '-') {
-        newPiece = new Empty(row, col, '-', -1);
+        newPiece = std::make_unique<Empty>(row, col, '-', -1);
     }
     return newPiece;
 }

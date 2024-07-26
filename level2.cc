@@ -1,3 +1,4 @@
+#include <memory>
 #include "level2.h"
 #include <cstdlib>
 #include <ctime>

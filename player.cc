@@ -1,3 +1,4 @@
+#include <memory>
 #include "player.h"
 #include "board.h"
 #include "scoreBoard.h"

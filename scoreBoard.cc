@@ -1,3 +1,4 @@
+#include <memory>
 #include "scoreBoard.h"
 
 ScoreBoard::ScoreBoard() : whiteScore(0.0), blackScore(0.0) {}

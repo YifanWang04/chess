@@ -1,3 +1,4 @@
+#include <memory>
 #include "pawn.h"
 #include "board.h"
 #include "piece.h"

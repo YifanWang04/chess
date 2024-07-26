@@ -1,3 +1,4 @@
+#include <memory>
 #ifndef BOARD_H
 #define BOARD_H
 
@@ -29,10 +30,10 @@ public:
 
     int boardSize;
     Piece*** pieces;
-    Player *player1;
-    Player *player2;
-    King* whiteKing;
-    King* blackKing;
+    std::unique_ptr<Player> player1;
+    std::unique_ptr<Player> player2;
+    std::unique_ptr<King> whiteKing;
+    std::unique_ptr<King> blackKing;
 
     void setupBoard(TextDisplay* td);
     void setupBoard(GraphDisplay* gd);

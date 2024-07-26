@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <memory>
 #include "board.h"
 #include "human.h"
 #include "level1.h"
@@ -14,13 +15,13 @@ using namespace std;
 const string validPieces = "PRNBQKprnbqk-";
 
 int main() {
-    Board* board = new Board();
-    Board* customizedBoard = nullptr;
-    TextDisplay *td = new TextDisplay();
-    GraphDisplay *gd = new GraphDisplay();
+    auto board = std::make_shared<Board>();
+    std::shared_ptr<Board> customizedBoard = nullptr;
+    auto td = std::make_shared<TextDisplay>();
+    auto gd = std::make_shared<GraphDisplay>();
     ScoreBoard scoreboard;
-    Player* whitePlayer = nullptr;
-    Player* blackPlayer = nullptr;
+    std::shared_ptr<Player> whitePlayer = nullptr;
+    std::shared_ptr<Player> blackPlayer = nullptr;
     bool gameRunning = false;
     int currentPlayerTurn = 0; // 0 for white, 1 for black
     bool defaultSetup = true;
@@ -45,13 +46,13 @@ int main() {
             cout << "Setting up game: " << white << " vs " << black << endl;
 
             if (white == "human") {
-                whitePlayer = new Human(0);
+                whitePlayer = std::make_shared<Human>(0);
             } else if (white.substr(0, 8) == "computer" && white.length() == 11 && isdigit(white[9])) {
                 int level = white[9] - '0';
                 if (level == 1) {
-                    whitePlayer = new Level1(0);
+                    whitePlayer = std::make_shared<Level1>(0);
                 } else if (level == 2) {
-                    whitePlayer = new Level2(0);
+                    whitePlayer = std::make_shared<Level2>(0);
                 }
             } else {
                 cout << "Invalid player type for white player. Must be 'human' or 'computer[1-4]'." << endl;
@@ -59,34 +60,30 @@ int main() {
             }
 
             if (black == "human") {
-                blackPlayer = new Human(1);
+                blackPlayer = std::make_shared<Human>(1);
             } else if (black.substr(0, 8) == "computer" && black.length() == 11 && isdigit(black[9])) {
                 int level = black[9] - '0';
                 if (level == 1) {
-                    blackPlayer = new Level1(1);
+                    blackPlayer = std::make_shared<Level1>(1);
                 } else if (level == 2) {
-                    blackPlayer = new Level2(1);
+                    blackPlayer = std::make_shared<Level2>(1);
                 }
             } else {
                 cout << "Invalid player type for black player. Must be 'human' or 'computer[1-4]'." << endl;
                 continue;
             }
 
-            delete board;
-            delete td;
-            delete gd;
-
             if (defaultSetup) {
-                board = new Board();
-                td = new TextDisplay();
-                gd = new GraphDisplay();
+                board = std::make_shared<Board>();
+                td = std::make_shared<TextDisplay>();
+                gd = std::make_shared<GraphDisplay>();
 
-                board->setupBoard(td);
-                board->setupBoard(gd);
+                board->setupBoard(td.get());
+                board->setupBoard(gd.get());
             } else if (customizedBoard != nullptr) {
-                board = new Board(*customizedBoard);
-                td = new TextDisplay();
-                gd = new GraphDisplay();
+                board = std::make_shared<Board>(*customizedBoard);
+                td = std::make_shared<TextDisplay>();
+                gd = std::make_shared<GraphDisplay>();
 
                 for (int i = 0; i < 8; ++i) {
                     for (int j = 0; j < 8; ++j) {
@@ -96,8 +93,8 @@ int main() {
                 }
             }
 
-            board->player1 = whitePlayer;
-            board->player2 = blackPlayer;
+            board->player1 = whitePlayer.get();
+            board->player2 = blackPlayer.get();
 
             gameRunning = true;
             currentPlayerTurn = 0; // Start with white player
@@ -131,10 +128,10 @@ int main() {
                 continue;
             }
 
-            Player* currentPlayer = (currentPlayerTurn == 0) ? whitePlayer : blackPlayer;
+            std::shared_ptr<Player> currentPlayer = (currentPlayerTurn == 0) ? whitePlayer : blackPlayer;
 
-            if (dynamic_cast<Computer*>(currentPlayer)) {
-                currentPlayer->computerMove(board, td, gd);
+            if (dynamic_cast<Computer*>(currentPlayer.get())) {
+                currentPlayer->computerMove(board.get(), td.get(), gd.get());
                 currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
                 board->inCheck(currentPlayerTurn);
 
@@ -242,7 +239,7 @@ int main() {
                     continue;
                 }
 
-                if (board->isMoveable(fromRow, fromCol, toRow, toCol, board)) {
+                if (board->isMoveable(fromRow, fromCol, toRow, toCol, board.get())) {
 
                     // check promotion
                     if (promoteTo.size() == 1) {
@@ -285,12 +282,9 @@ int main() {
                 cout << "Cannot enter setup mode while a game is running." << endl;
                 continue;
             }
-            delete board;
-            board = new Board();
-            delete td;
-            td = new TextDisplay();
-            delete gd;
-            gd = new GraphDisplay();
+            board = std::make_shared<Board>();
+            td = std::make_shared<TextDisplay>();
+            gd = std::make_shared<GraphDisplay>();
             string setupCmd;
             bool whiteKingExist = false;
             bool blackKingExist = false;
@@ -396,7 +390,7 @@ int main() {
                         cout << "A King is in Check!" << endl;
                         continue;
                     }
-                    customizedBoard = new Board(*board); // Save the customized board
+                    customizedBoard = std::make_shared<Board>(*board); // Save the customized board
                     cout << "Setup complete!" << endl;
                     defaultSetup = false;
                     break;
@@ -411,13 +405,6 @@ int main() {
 
     cout << "Final Score:" << endl;
     scoreboard.printResults();
-
-    delete board;
-    delete whitePlayer;
-    delete blackPlayer;
-    delete customizedBoard;
-    delete td;
-    delete gd;
 
     return 0;
 }

@@ -1,3 +1,4 @@
+#include <memory>
 #include "piece.h"
 #include "board.h"
 #include "textDisplay.h" 

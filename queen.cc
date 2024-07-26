@@ -1,3 +1,4 @@
+#include <memory>
 #include "queen.h"
 #include "board.h"
 
