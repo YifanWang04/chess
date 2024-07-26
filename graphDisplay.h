@@ -1,10 +1,10 @@
-#ifndef __GRAPH_DISPLAY_H__
-#define __GRAPH_DISPLAY_H__
-
+#ifndef GRAPH_DISPLAY_H
+#define GRAPH_DISPLAY_H
 #include <X11/Xlib.h>
+#include <X11/xpm.h>
 #include <iostream>
 #include <string>
-#include <unordered_map>
+#include <map>
 
 class GraphDisplay {
   Display *d;
@@ -13,20 +13,20 @@ class GraphDisplay {
   GC gc;
   unsigned long colours[2];
   int width, height;
-  std::unordered_map<char, Pixmap> piecePixmaps;
-  std::unordered_map<char, Pixmap> pieceMasks;
+  std::map<char, Pixmap> piecePixmaps; // Map to store piece images
+  std::map<char, Pixmap> pieceMasks;   // Map to store piece masks
 
  public:
   GraphDisplay(int width=800, int height=800);  // Constructor; displays the window.
   ~GraphDisplay();                              // Destructor; destroys the window.
 
-  enum { Light = 0, Dark }; // Available colours.
+  enum {Light=0, Dark}; // Available colours.
 
   // Draws a rectangle
-  void fillRectangle(int x, int y, int width, int height, int colour = Dark);
+  void fillRectangle(int x, int y, int width, int height, int colour=Dark);
 
   // Draws a string
-  void drawString(int x, int y, std::string msg, int colour = Dark);
+  void drawString(int x, int y, std::string msg, int colour=Dark);
 
   // Initializes the chessboard
   void initBoard();
@@ -43,11 +43,12 @@ class GraphDisplay {
   // Prints the first 10000 available fonts
   void showAvailableFonts();
 
-  // Loads all piece images at once
+    // Loads all piece images at once
   void preLoadPieceImages();
 
-  // Loads a single piece image
-  void loadPieceImage(char piece, const std::string &filepath);
+ private:
+  // Loads a piece image
+  void loadPieceImage(char piece);
 };
 
 #endif
