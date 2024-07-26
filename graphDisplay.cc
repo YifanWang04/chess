@@ -140,7 +140,6 @@ void GraphDisplay::notify(int row, int col, char piece) {
     XFreeFont(d, font);
 }
 
-
 void GraphDisplay::clear() {
     XClearWindow(d, w);
 }

@@ -64,7 +64,7 @@ int main() {
                         gd->notify(i, j, board->getPiece(i, j)->getSymbol());
                     }
                 }
-                gd->show();
+                gd->show();  // Show the entire board at once
             } else {
                 cout << "Currently only human vs human is supported." << endl;
             }
@@ -137,7 +137,7 @@ int main() {
                     td->notify(fromRow, rookFromCol, '-');
 
                     gd->notify(fromRow, rookCol, board->getPiece(fromRow, rookCol)->getSymbol());
-                    gd->notify(fromRow, fromCol, '-');
+                    gd->notify(fromRow, rookFromCol, '-');
 
                     cout << *td;
                     gd->show();
