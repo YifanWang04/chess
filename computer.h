@@ -2,13 +2,12 @@
 #define COMPUTER_H
 
 #include "player.h"
-#include "board.h"
 
 class Computer : public Player {
 public:
     Computer(int color, int level);
     virtual ~Computer();
-    virtual void computerMove(Board *board, TextDisplay *td, GraphDisplay *gd) = 0; // Pure virtual function
+    virtual void computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) = 0; // Pure virtual
 };
 
 #endif // COMPUTER_H

@@ -87,3 +87,7 @@ void Player::reset() {
     inStalemate = false;
     isCheckmate = false;
 }
+
+int Player::getColor() const {
+    return color;
+}

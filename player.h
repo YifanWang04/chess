@@ -38,6 +38,7 @@ public:
     void setInCheck(bool inCheck);
     bool getInCheck() const;
     void reset();
+    int getColor() const;
 };
 
 #endif // PLAYER_H
