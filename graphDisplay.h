@@ -44,6 +44,9 @@ class GraphDisplay {
   void showAvailableFonts();
 
  private:
+  // Loads all piece images
+  void loadAllPieceImages();
+
   // Loads a piece image
   void loadPieceImage(char piece);
 };
