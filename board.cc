@@ -37,7 +37,23 @@ Board::~Board() {
 }
 
 
-// copy ctor 
+// // copy ctor 
+// Board::Board(const Board& other) : boardSize(other.boardSize), player1(nullptr), player2(nullptr), whiteKing(nullptr), blackKing(nullptr) {
+//     pieces = new Piece**[boardSize];
+//     for (int i = 0; i < boardSize; ++i) {
+//         pieces[i] = new Piece*[boardSize];
+//         for (int j = 0; j < boardSize; ++j) {
+//             if (other.pieces[i][j]) {
+//                 pieces[i][j] = other.pieces[i][j]->clone();
+//                 if (pieces[i][j]->getSymbol() == 'K') whiteKing = dynamic_cast<King*>(pieces[i][j]);
+//                 if (pieces[i][j]->getSymbol() == 'k') blackKing = dynamic_cast<King*>(pieces[i][j]);
+//             } else {
+//                 pieces[i][j] = nullptr;
+//             }
+//         }
+//     }
+// }
+
 Board::Board(const Board& other) : boardSize(other.boardSize), player1(nullptr), player2(nullptr), whiteKing(nullptr), blackKing(nullptr) {
     pieces = new Piece**[boardSize];
     for (int i = 0; i < boardSize; ++i) {
@@ -45,14 +61,25 @@ Board::Board(const Board& other) : boardSize(other.boardSize), player1(nullptr),
         for (int j = 0; j < boardSize; ++j) {
             if (other.pieces[i][j]) {
                 pieces[i][j] = other.pieces[i][j]->clone();
-                if (pieces[i][j]->getSymbol() == 'K') whiteKing = dynamic_cast<King*>(pieces[i][j]);
-                if (pieces[i][j]->getSymbol() == 'k') blackKing = dynamic_cast<King*>(pieces[i][j]);
+                if (pieces[i][j]->getSymbol() == 'K') {
+                    whiteKing = dynamic_cast<King*>(pieces[i][j]);
+                    if (!whiteKing) {
+                        std::cerr << "Error: Invalid cast to whiteKing during copy" << std::endl;
+                    }
+                }
+                if (pieces[i][j]->getSymbol() == 'k') {
+                    blackKing = dynamic_cast<King*>(pieces[i][j]);
+                    if (!blackKing) {
+                        std::cerr << "Error: Invalid cast to blackKing during copy" << std::endl;
+                    }
+                }
             } else {
                 pieces[i][j] = nullptr;
             }
         }
     }
 }
+
 
 
 void Board::setupBoard(TextDisplay* td) {
