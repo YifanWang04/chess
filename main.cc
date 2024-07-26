@@ -93,8 +93,8 @@ int main() {
                 }
             }
 
-            board->player1 = whitePlayer.get();
-            board->player2 = blackPlayer.get();
+            board->player1 = whitePlayer;
+            board->player2 = blackPlayer;
 
             gameRunning = true;
             currentPlayerTurn = 0; // Start with white player
