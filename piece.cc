@@ -35,7 +35,6 @@ bool Piece::isInDanger(Board &board) {
             Piece* currentPiece = board.getPiece(row, col);
             if (currentPiece != nullptr && currentPiece->getColor() != color && currentPiece->getSymbol() != '-') {
                 if (currentPiece->canMove(this->getRow(), this->getCol(), board)) {;
-                    cout << currentPiece->getSymbol() << " causes the check." << endl;
                     return true;
                 }
             }
