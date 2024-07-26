@@ -295,29 +295,16 @@ Piece* Board::createPiece(char symbol, int row, int col) {
 void Board::makeMove(int row, int col, int newRow, int newCol) {
     Piece* piece = getPiece(row, col);
 
-    if (!piece) {
-        std::cerr << "Error: Null piece at (" << row << ", " << col << ")" << std::endl;
-        return;
-    }
+    std::cout << "Attempting to move piece: " << piece->getSymbol() << " from (" << row << ", " << col << ") to (" << newRow << ", " << newCol << ")" << std::endl;
 
-    // check castling
+    // check castling 
     if ((piece->getSymbol() == 'K' || piece->getSymbol() == 'k') && abs(newCol - col) == 2) {
+        std::cout << "Castling detected" << std::endl;
         bool isKingSide = (newCol == col + 2);
         int rookCol = isKingSide ? 7 : 0;
         int newRookCol = isKingSide ? newCol - 1 : newCol + 1;
 
         Piece* rook = getPiece(row, rookCol);
-        if (!rook) {
-            std::cerr << "Error: Null rook at (" << row << ", " << rookCol << ")" << std::endl;
-            return;
-        }
-
-        Rook* r = dynamic_cast<Rook*>(rook);
-        if (!r) {
-            std::cerr << "Error: Invalid cast to Rook at (" << row << ", " << rookCol << ")" << std::endl;
-            return;
-        }
-
         pieces[row][newRookCol] = rook;
         pieces[row][rookCol] = new Empty(row, rookCol, '-', -1);
         rook->setCol(newRookCol);
@@ -328,19 +315,25 @@ void Board::makeMove(int row, int col, int newRow, int newCol) {
         piece->setCol(newCol);
 
         King* k = dynamic_cast<King*>(piece);
-        if (!k) {
-            std::cerr << "Error: Invalid cast to King at (" << row << ", " << col << ")" << std::endl;
-            return;
+        if (k) {
+            k->setHasMoved(true);
+        } else {
+            std::cerr << "Error: Castling piece is not a King" << std::endl;
         }
 
-        k->setHasMoved(true);
-        r->setHasMoved(true);
+        Rook* r = dynamic_cast<Rook*>(rook);
+        if (r) {
+            r->setHasMoved(true);
+        } else {
+            std::cerr << "Error: Castling rook is not a Rook" << std::endl;
+        }
 
         return;
     }
 
     // check en passant
     if ((piece->getSymbol() == 'P' || piece->getSymbol() == 'p') && col != newCol && getPiece(newRow, newCol)->getSymbol() == '-') {
+        std::cout << "En passant detected" << std::endl;
         captureEnPassant(row, col, newRow, newCol);
         resetEnPassantTarget();
         return;
@@ -353,7 +346,7 @@ void Board::makeMove(int row, int col, int newRow, int newCol) {
     }
     pieces[newRow][newCol] = newPiece;
 
-    Piece* newEmpty = createPiece('-', row, col);
+    Piece *newEmpty = createPiece('-', row, col);
     if (pieces[row][col] != nullptr) {
         delete pieces[row][col];
     }
@@ -377,7 +370,10 @@ void Board::makeMove(int row, int col, int newRow, int newCol) {
     } else if (King* king = dynamic_cast<King*>(newPiece)) {
         king->setHasMoved(true);
     }
+
+    std::cout << "Move completed" << std::endl;
 }
+
 
 
 
