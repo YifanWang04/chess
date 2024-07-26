@@ -58,21 +58,6 @@ GraphDisplay::GraphDisplay(int width, int height): width(width), height(height) 
   XSynchronize(d,True);
 
   usleep(1000);
-
-  // Load piece images
-  loadPieceImage('P', "img/whitePawn.xpm");
-  loadPieceImage('R', "img/whiteRook.xpm");
-  loadPieceImage('N', "img/whiteKnight.xpm");
-  loadPieceImage('B', "img/whiteBishop.xpm");
-  loadPieceImage('Q', "img/whiteQueen.xpm");
-  loadPieceImage('K', "img/whiteKing.xpm");
-
-  loadPieceImage('p', "img/blackPawn.xpm");
-  loadPieceImage('r', "img/blackRook.xpm");
-  loadPieceImage('n', "img/blackKnight.xpm");
-  loadPieceImage('b', "img/blackBishop.xpm");
-  loadPieceImage('q', "img/blackQueen.xpm");
-  loadPieceImage('k', "img/blackKing.xpm");
 }
 
 GraphDisplay::~GraphDisplay() {
@@ -128,7 +113,8 @@ void GraphDisplay::notify(int row, int col, char piece) {
         fillRectangle(x, y, width / 8, height / 8, Dark);  // Dark color
     }
 
-    // Draw the piece image if it exists
+    // Load and draw the piece image if it exists
+    loadPieceImage(piece);
     if (piecePixmaps.find(piece) != piecePixmaps.end()) {
         XSetClipMask(d, gc, pieceMasks[piece]);
         XSetClipOrigin(d, gc, x, y);
@@ -152,12 +138,35 @@ void GraphDisplay::showAvailableFonts() {
   for (int i = 0; i < count; ++i) cout << fnts[i] << endl;
 }
 
-void GraphDisplay::loadPieceImage(char piece, const char* filepath) {
+void GraphDisplay::loadPieceImage(char piece) {
+    // Check if the piece image is already loaded
+    if (piecePixmaps.find(piece) != piecePixmaps.end()) {
+        return;
+    }
+
+    // Load the piece image
+    std::string filepath;
+    switch(piece) {
+        case 'P': filepath = "img/whitePawn.xpm"; break;
+        case 'R': filepath = "img/whiteRook.xpm"; break;
+        case 'N': filepath = "img/whiteKnight.xpm"; break;
+        case 'B': filepath = "img/whiteBishop.xpm"; break;
+        case 'Q': filepath = "img/whiteQueen.xpm"; break;
+        case 'K': filepath = "img/whiteKing.xpm"; break;
+        case 'p': filepath = "img/blackPawn.xpm"; break;
+        case 'r': filepath = "img/blackRook.xpm"; break;
+        case 'n': filepath = "img/blackKnight.xpm"; break;
+        case 'b': filepath = "img/blackBishop.xpm"; break;
+        case 'q': filepath = "img/blackQueen.xpm"; break;
+        case 'k': filepath = "img/blackKing.xpm"; break;
+        default: return;
+    }
+
     Pixmap pixmap, mask;
     XpmAttributes attributes;
     attributes.valuemask = XpmSize;
 
-    int status = XpmReadFileToPixmap(d, w, filepath, &pixmap, &mask, &attributes);
+    int status = XpmReadFileToPixmap(d, w, filepath.c_str(), &pixmap, &mask, &attributes);
     if (status == XpmSuccess) {
         piecePixmaps[piece] = pixmap;
         pieceMasks[piece] = mask;

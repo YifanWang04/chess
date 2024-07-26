@@ -45,7 +45,7 @@ class GraphDisplay {
 
  private:
   // Loads a piece image
-  void loadPieceImage(char piece, const char* filepath);
+  void loadPieceImage(char piece);
 };
 
 #endif
