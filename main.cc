@@ -69,8 +69,8 @@ int main() {
 
             if (white == "human") {
                 whitePlayer = new Human(0);
-            } else if (white.substr(0, 8) == "computer" && white.length() == 9 && isdigit(white[8])) {
-                int level = white[8] - '0';
+            } else if (white.substr(0, 8) == "computer" && white.length() == 10 && isdigit(white[9])) {
+                int level = white[9] - '0';
                 if (level == 1) {
                     whitePlayer = new Level1(0);
                 }
@@ -82,8 +82,8 @@ int main() {
 
             if (black == "human") {
                 blackPlayer = new Human(1);
-            } else if (black.substr(0, 8) == "computer" && black.length() == 9 && isdigit(black[8])) {
-                int level = black[8] - '0';
+            } else if (black.substr(0, 8) == "computer" && black.length() == 10 && isdigit(black[9])) {
+                int level = black[9] - '0';
                 if (level == 1) {
                     blackPlayer = new Level1(1);
                 }
@@ -92,6 +92,7 @@ int main() {
                 cout << "Invalid player type for black player. Must be 'human' or 'computer[1-4]'." << endl;
                 continue;
             }
+
 
             board->player1 = whitePlayer;
             board->player2 = blackPlayer;
