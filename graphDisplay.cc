@@ -6,6 +6,8 @@
 #include <string>
 #include <sstream>
 #include <unistd.h>
+#include <vector>  // ÃÌº”’‚––
+
 #include "graphDisplay.h"
 
 using namespace std;
