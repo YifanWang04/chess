@@ -377,6 +377,7 @@ void Board::makeMove(int row, int col, int newRow, int newCol) {
 
 
 
+
 bool Board::isMoveable(int row, int col, int newRow, int newCol, Board* board) const {
     Piece *currentPiece = board->getPiece(row, col);
     Piece *targetPiece = board->getPiece(newRow,newCol);
@@ -569,10 +570,6 @@ void Board::promotion(int row, int col, char newPiece) {
 
 bool Board::canCastle(int row, int col, int newRow, int newCol) {
     Piece* king = this->getPiece(row, col);
-    if (!king) {
-        std::cerr << "Error: Null king at (" << row << ", " << col << ")" << std::endl;
-        return false;
-    }
     if (king->getSymbol() != 'K' && king->getSymbol() != 'k') return false;
 
     King* k = dynamic_cast<King*>(king);
@@ -585,22 +582,15 @@ bool Board::canCastle(int row, int col, int newRow, int newCol) {
 
     int rookCol = isKingSide ? 7 : 0;
     Piece* rook = this->getPiece(row, rookCol);
-    if (!rook) {
-        std::cerr << "Error: Null rook at (" << row << ", " << rookCol << ")" << std::endl;
-        return false;
-    }
 
     Rook* r = dynamic_cast<Rook*>(rook);
     if (r == nullptr || r->getHasMoved()) return false;
 
     int direction = isKingSide ? 1 : -1;
-    for (int i = col + direction; i != rookCol; i += direction) {
-        if (this->getPiece(row, i)->getSymbol() != '-') {
+    for (int i = col + direction; i != newCol + direction; i += direction) {
+        if (i != col && this->getPiece(row, i)->getSymbol() != '-') {
             return false;
         }
-    }
-
-    for (int i = col; i != newCol + direction; i += direction) {
         if (willSelfBeInCheck(row, col, row, i)) {
             return false;
         }
@@ -608,6 +598,7 @@ bool Board::canCastle(int row, int col, int newRow, int newCol) {
 
     return true;
 }
+
 
 
 
