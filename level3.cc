@@ -6,8 +6,17 @@
 
 Level3::Level3(int color) : Computer(color, 3) {}
 
+bool Level3::isSafeMove(Board* board, int fromRow, int fromCol, int toRow, int toCol) {
+    // Simulate the move
+    Board testBoard(*board);
+    testBoard.makeMove(fromRow, fromCol, toRow, toCol);
+    
+    // Check if the piece will be in danger after the move
+    return !testBoard.getPiece(toRow, toCol)->isInDanger(testBoard);
+}
+
 void Level3::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
-    std::vector<std::tuple<int, int, int, int>> avoidCaptureMoves;
+    std::vector<std::tuple<int, int, int, int>> safeMoves;
     std::vector<std::tuple<int, int, int, int>> capturingMoves;
     std::vector<std::tuple<int, int, int, int>> checkingMoves;
     std::vector<std::tuple<int, int, int, int>> otherMoves;
@@ -21,9 +30,9 @@ void Level3::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
                         if (board->isMoveable(row, col, newRow, newCol, board) && 
                             !board->willSelfBeInCheck(row, col, newRow, newCol)) {
                             
-                            // Avoid capture move
-                            if (!board->getPiece(newRow, newCol)->isInDanger(*board)) {
-                                avoidCaptureMoves.push_back(std::make_tuple(row, col, newRow, newCol));
+                            // Check if the move is safe
+                            if (isSafeMove(board, row, col, newRow, newCol)) {
+                                safeMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
                             // Capture move
                             else if (board->getPiece(newRow, newCol)->getColor() != -1 && 
@@ -45,10 +54,10 @@ void Level3::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
         }
     }
 
-    // Prefer avoiding capture moves, then capturing moves, then checking moves, and lastly other moves
+    // Prefer safe moves, then capturing moves, then checking moves, and lastly other moves
     std::vector<std::tuple<int, int, int, int>>* chosenMoves = nullptr;
-    if (!avoidCaptureMoves.empty()) {
-        chosenMoves = &avoidCaptureMoves;
+    if (!safeMoves.empty()) {
+        chosenMoves = &safeMoves;
     } else if (!capturingMoves.empty()) {
         chosenMoves = &capturingMoves;
     } else if (!checkingMoves.empty()) {
