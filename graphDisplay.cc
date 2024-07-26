@@ -114,9 +114,9 @@ void GraphDisplay::notify(int row, int col, char piece) {
 
     // Redraw the background color of the square
     if ((row + col) % 2 == 0) {
-        fillRectangle(x, y, width / 8, height / 8, Light);  // Light color
+        fillRectangle(x, y, width / 8, height / 8, Dark);  // Light color
     } else {
-        fillRectangle(x, y, width / 8, height / 8, Dark);  // Dark color
+        fillRectangle(x, y, width / 8, height / 8, Light);  // Dark color
     }
 
     // Load and draw the piece image if it exists

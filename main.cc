@@ -53,7 +53,7 @@ int main() {
 
                     board->setupBoard(td);
                     board->setupBoard(gd);
-                    defaultSetup = false;  // set for next game
+                    defaultSetup = true;  // set for next game
                 }
 
                 whitePlayer = new Player(0);
