@@ -41,26 +41,26 @@ int main() {
             iss >> white >> black;
             cout << "Setting up game: " << white << " vs " << black << endl;
 
-            if (white == "human" && black == "human") {
+            if (defaultSetup) {
                 delete board;
                 delete td;
                 delete gd;
-
                 board = new Board();
                 td = new TextDisplay();
                 gd = new GraphDisplay();
-                
+                board->setupBoard(td);
+                board->setupBoard(gd);
+                defaultSetup = true;  //set for next game
+            
+            }
+
+            if (white == "human" && black == "human") {
+
                 whitePlayer = new Player(0);
                 board->player1 = whitePlayer;
                 blackPlayer = new Player(1);
                 board->player2 = blackPlayer;
-
-                if (defaultSetup) { 
-                    board->setupBoard(td);
-                    board->setupBoard(gd);
-                }
-                defaultSetup = true;  //set for next game
-
+            }
                 gameRunning = true;
                 currentPlayerTurn = 0; // Start with white player
                 cout << *td;
