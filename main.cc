@@ -69,7 +69,7 @@ int main() {
 
             if (white == "human") {
                 whitePlayer = new Human(0);
-            } else if (white.substr(0, 8) == "computer" && white.length() == 11 && isdigit(white[9])) {
+            } else if (white.substr(0, 8) == "computer" && white.length() == 10 && isdigit(white[9])) {
                 int level = white[9] - '0';
                 if (level == 1) {
                     whitePlayer = new Level1(0);
@@ -82,7 +82,7 @@ int main() {
 
             if (black == "human") {
                 blackPlayer = new Human(1);
-            } else if (black.substr(0, 8) == "computer" && black.length() == 11 && isdigit(black[9])) {
+            } else if (black.substr(0, 8) == "computer" && black.length() == 10 && isdigit(black[9])) {
                 int level = black[9] - '0';
                 if (level == 1) {
                     blackPlayer = new Level1(1);
@@ -131,59 +131,99 @@ int main() {
             Player* currentPlayer = (currentPlayerTurn == 0) ? whitePlayer : blackPlayer;
 
             if (dynamic_cast<Computer*>(currentPlayer)) {
-                cout << "It's the computer's turn to move." << endl;
-                continue;
-            }
+                currentPlayer->computerMove(board, td, gd);
+                currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
+                board->inCheck(currentPlayerTurn);
 
-            string from, to, promoteTo;
-            iss >> from >> to >> promoteTo;
+                // Check for end conditions
+                if (board->inCheckmate(currentPlayerTurn)) {
+                    scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
+                    gameRunning = false;
+                } 
+                if (board->inStalemate(currentPlayerTurn)) {
+                    scoreboard.endGame();
+                    gameRunning = false;
+                }
+                cout << "Moved" << endl;
+            } else {
+                string from, to, promoteTo;
+                iss >> from >> to >> promoteTo;
 
-            int fromRow = from[1] - '1';
-            int fromCol = from[0] - 'a';
-            int toRow = to[1] - '1';
-            int toCol = to[0] - 'a';
+                int fromRow = from[1] - '1';
+                int fromCol = from[0] - 'a';
+                int toRow = to[1] - '1';
+                int toCol = to[0] - 'a';
 
-            if (toRow < 0 || toRow >= 8 || toCol < 0 || toCol >= 8) {
-                cout << "You cannot move out of bound" << endl;
-                continue;
-            }
-            if (board->getPiece(fromRow, fromCol)->getSymbol() == '-') {
-                cout << "You cannot move an empty square" << endl;
-                continue;
-            }
+                if (toRow < 0 || toRow >= 8 || toCol < 0 || toCol >= 8) {
+                    cout << "You cannot move out of bound" << endl;
+                    continue;
+                }
+                if (board->getPiece(fromRow, fromCol)->getSymbol() == '-') {
+                    cout << "You cannot move an empty square" << endl;
+                    continue;
+                }
 
-            if (currentPlayerTurn != board->getPiece(fromRow, fromCol)->getColor()) {
-                cout << "You cannot move your opponent's piece. Try again." << endl;
-                continue;
-            }
+                if (currentPlayerTurn != board->getPiece(fromRow, fromCol)->getColor()) {
+                    cout << "You cannot move your opponent's piece. Try again." << endl;
+                    continue;
+                }
 
-            // Check if the move puts the player in self-check
-            if (board->willSelfBeInCheck(fromRow, fromCol, toRow, toCol)) {
-                cout << "This move puts yourself in check" << endl;
-                continue;
-            }
+                // Check if the move puts the player in self-check
+                if (board->willSelfBeInCheck(fromRow, fromCol, toRow, toCol)) {
+                    cout << "This move puts yourself in check" << endl;
+                    continue;
+                }
 
-            // Check for castling
-            if ((board->getPiece(fromRow, fromCol)->getSymbol() == 'K' || board->getPiece(fromRow, fromCol)->getSymbol() == 'k') &&
-                abs(toCol - fromCol) == 2) {
-                if (board->canCastle(fromRow, fromCol, toRow, toCol)) {
-                    board->makeMove(fromRow, fromCol, toRow, toCol);
+                // Check for castling
+                if ((board->getPiece(fromRow, fromCol)->getSymbol() == 'K' || board->getPiece(fromRow, fromCol)->getSymbol() == 'k') &&
+                    abs(toCol - fromCol) == 2) {
+                    if (board->canCastle(fromRow, fromCol, toRow, toCol)) {
+                        board->makeMove(fromRow, fromCol, toRow, toCol);
 
+                        td->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
+                        td->notify(fromRow, fromCol, '-');
+
+                        gd->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
+                        gd->notify(fromRow, fromCol, '-');
+
+                        int rookCol = (toCol == fromCol + 2) ? toCol - 1 : toCol + 1;
+                        int rookFromCol = (toCol == fromCol + 2) ? 7 : 0;
+
+                        td->notify(fromRow, rookCol, board->getPiece(fromRow, rookCol)->getSymbol());
+                        td->notify(fromRow, rookFromCol, '-');
+
+                        gd->notify(fromRow, rookCol, board->getPiece(fromRow, rookCol)->getSymbol());
+                        gd->notify(fromRow, fromCol, '-');
+
+                        cout << *td;
+                        gd->show();
+                        currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
+                        board->inCheck(currentPlayerTurn);
+                        if (board->inCheckmate(currentPlayerTurn)) {
+                            scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
+                            gameRunning = false;
+                        }
+                        if (board->inStalemate(currentPlayerTurn)) {
+                            scoreboard.endGame();
+                            gameRunning = false;
+                        }
+                        continue;
+                    } else {
+                        cout << "Castling move is not valid" << endl;
+                        continue;
+                    }
+                }
+
+                // Check for en passant
+                if ((board->getPiece(fromRow, fromCol)->getSymbol() == 'P' || board->getPiece(fromRow, fromCol)->getSymbol() == 'p') &&
+                    board->canCaptureEnPassant(fromRow, fromCol, toRow, toCol)) {
+                    board->captureEnPassant(fromRow, fromCol, toRow, toCol);
                     td->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
                     td->notify(fromRow, fromCol, '-');
-
+                    td->notify((board->getPiece(toRow, toCol)->getSymbol() == 'P') ? toRow - 1 : toRow + 1, toCol, '-');
                     gd->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
                     gd->notify(fromRow, fromCol, '-');
-
-                    int rookCol = (toCol == fromCol + 2) ? toCol - 1 : toCol + 1;
-                    int rookFromCol = (toCol == fromCol + 2) ? 7 : 0;
-
-                    td->notify(fromRow, rookCol, board->getPiece(fromRow, rookCol)->getSymbol());
-                    td->notify(fromRow, rookFromCol, '-');
-
-                    gd->notify(fromRow, rookCol, board->getPiece(fromRow, rookCol)->getSymbol());
-                    gd->notify(fromRow, fromCol, '-');
-
+                    gd->notify((board->getPiece(toRow, toCol)->getSymbol() == 'P') ? toRow - 1 : toRow + 1, toCol, '-');
                     cout << *td;
                     gd->show();
                     currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
@@ -197,74 +237,65 @@ int main() {
                         gameRunning = false;
                     }
                     continue;
+                }
+
+                if (board->isMoveable(fromRow, fromCol, toRow, toCol, board)) {
+
+                    // check promotion
+                    if (promoteTo.size() == 1) {
+                        if (!board->checkPromotion(fromRow, fromCol, toRow, toCol, promoteTo[0])) continue;
+                        board->makeMove(fromRow, fromCol, toRow, toCol);
+                        board->promotion(toRow, toCol, promoteTo[0]);
+                    } else {
+                        board->makeMove(fromRow, fromCol, toRow, toCol);
+                    }
+
+                    // notify display
+                    td->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
+                    td->notify(fromRow, fromCol, '-');
+                    gd->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
+                    gd->notify(fromRow, fromCol, '-');
+
+                    cout << *td;
+                    gd->show();
+                    currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
+                    board->inCheck(currentPlayerTurn);
+
+                    // Check for end conditions
+                    if (board->inCheckmate(currentPlayerTurn)) {
+                        scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
+                        gameRunning = false;
+                    } 
+                    if (board->inStalemate(currentPlayerTurn)) {
+                        scoreboard.endGame();
+                        gameRunning = false;
+                    }
+                    
                 } else {
-                    cout << "Castling move is not valid" << endl;
+                    cout << "Move is not valid for this piece" << endl;
                     continue;
                 }
+                cout << "Moved" << endl;
+
+                // After human move, if it's computer's turn, make the move immediately
+                while (gameRunning && (dynamic_cast<Computer*>(currentPlayerTurn == 0 ? whitePlayer : blackPlayer))) {
+                    Player* currentPlayer = (currentPlayerTurn == 0) ? whitePlayer : blackPlayer;
+                    currentPlayer->computerMove(board, td, gd);
+                    currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
+                    board->inCheck(currentPlayerTurn);
+
+                    // Check for end conditions
+                    if (board->inCheckmate(currentPlayerTurn)) {
+                        scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
+                        gameRunning = false;
+                    }
+                    if (board->inStalemate(currentPlayerTurn)) {
+                        scoreboard.endGame();
+                        gameRunning = false;
+                    }
+                    cout << "Moved" << endl;
+                }
             }
-
-            // Check for en passant
-            if ((board->getPiece(fromRow, fromCol)->getSymbol() == 'P' || board->getPiece(fromRow, fromCol)->getSymbol() == 'p') &&
-                board->canCaptureEnPassant(fromRow, fromCol, toRow, toCol)) {
-                board->captureEnPassant(fromRow, fromCol, toRow, toCol);
-                td->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
-                td->notify(fromRow, fromCol, '-');
-                td->notify((board->getPiece(toRow, toCol)->getSymbol() == 'P') ? toRow - 1 : toRow + 1, toCol, '-');
-                gd->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
-                gd->notify(fromRow, fromCol, '-');
-                gd->notify((board->getPiece(toRow, toCol)->getSymbol() == 'P') ? toRow - 1 : toRow + 1, toCol, '-');
-                cout << *td;
-                gd->show();
-                currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
-                board->inCheck(currentPlayerTurn);
-                if (board->inCheckmate(currentPlayerTurn)) {
-                    scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
-                    gameRunning = false;
-                }
-                if (board->inStalemate(currentPlayerTurn)) {
-                    scoreboard.endGame();
-                    gameRunning = false;
-                }
-                continue;
-            }
-
-            if (board->isMoveable(fromRow, fromCol, toRow, toCol, board)) {
-
-                // check promotion
-                if (promoteTo.size() == 1) {
-                    if (!board->checkPromotion(fromRow, fromCol, toRow, toCol, promoteTo[0])) continue;
-                    board->makeMove(fromRow, fromCol, toRow, toCol);
-                    board->promotion(toRow, toCol, promoteTo[0]);
-                } else {
-                    board->makeMove(fromRow, fromCol, toRow, toCol);
-                }
-
-                // notify display
-                td->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
-                td->notify(fromRow, fromCol, '-');
-                gd->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
-                gd->notify(fromRow, fromCol, '-');
-
-                cout << *td;
-                gd->show();
-                currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
-                board->inCheck(currentPlayerTurn);
-
-                // Check for end conditions
-                if (board->inCheckmate(currentPlayerTurn)) {
-                    scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
-                    gameRunning = false;
-                } 
-                if (board->inStalemate(currentPlayerTurn)) {
-                    scoreboard.endGame();
-                    gameRunning = false;
-                }
-                
-            } else {
-                cout << "Move is not valid for this piece" << endl;
-                continue;
-            }
-            cout << "Moved" << endl;
         } else if (cmd == "setup") {
             if (gameRunning) {
                 cout << "Cannot enter setup mode while a game is running." << endl;
@@ -391,26 +422,6 @@ int main() {
             }
         } else {
             cout << "Invalid command." << endl;
-        }
-
-        // If it's the computer's turn, make the move immediately
-        while (gameRunning && (dynamic_cast<Computer*>(currentPlayerTurn == 0 ? whitePlayer : blackPlayer))) {
-            Player* currentPlayer = (currentPlayerTurn == 0) ? whitePlayer : blackPlayer;
-            currentPlayer->computerMove(board, td, gd);
-
-            currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
-            board->inCheck(currentPlayerTurn);
-
-            // Check for end conditions
-            if (board->inCheckmate(currentPlayerTurn)) {
-                scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
-                gameRunning = false;
-            }
-            if (board->inStalemate(currentPlayerTurn)) {
-                scoreboard.endGame();
-                gameRunning = false;
-            }
-            cout << "Moved" << endl;
         }
     }
 
