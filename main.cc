@@ -41,16 +41,16 @@ int main() {
             iss >> white >> black;
             cout << "Setting up game: " << white << " vs " << black << endl;
 
+            // Reset the board and displays
+            delete board;
+            delete td;
+            delete gd;
+            board = new Board();
+            td = new TextDisplay();
+            gd = new GraphDisplay();
+
             if (white == "human" && black == "human") {
                 if (defaultSetup) {
-                    delete board;
-                    delete td;
-                    delete gd;
-
-                    board = new Board();
-                    td = new TextDisplay();
-                    gd = new GraphDisplay();
-
                     board->setupBoard(td);
                     board->setupBoard(gd);
                     defaultSetup = false;  // set for next game
@@ -128,7 +128,6 @@ int main() {
             if ((board->getPiece(fromRow, fromCol)->getSymbol() == 'K' || board->getPiece(fromRow, fromCol)->getSymbol() == 'k') &&
                 abs(toCol - fromCol) == 2) {
                 if (board->canCastle(fromRow, fromCol, toRow, toCol)) {
-                    
                     board->makeMove(fromRow, fromCol, toRow, toCol);
 
                     td->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
