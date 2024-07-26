@@ -413,8 +413,6 @@ int main() {
     scoreboard.printResults();
 
     delete board;
-    delete whitePlayer;
-    delete blackPlayer;
     delete customizedBoard;
     delete td;
     delete gd;
