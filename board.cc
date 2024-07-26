@@ -36,24 +36,6 @@ Board::~Board() {
     blackKing = nullptr;
 }
 
-
-// // copy ctor 
-// Board::Board(const Board& other) : boardSize(other.boardSize), player1(nullptr), player2(nullptr), whiteKing(nullptr), blackKing(nullptr) {
-//     pieces = new Piece**[boardSize];
-//     for (int i = 0; i < boardSize; ++i) {
-//         pieces[i] = new Piece*[boardSize];
-//         for (int j = 0; j < boardSize; ++j) {
-//             if (other.pieces[i][j]) {
-//                 pieces[i][j] = other.pieces[i][j]->clone();
-//                 if (pieces[i][j]->getSymbol() == 'K') whiteKing = dynamic_cast<King*>(pieces[i][j]);
-//                 if (pieces[i][j]->getSymbol() == 'k') blackKing = dynamic_cast<King*>(pieces[i][j]);
-//             } else {
-//                 pieces[i][j] = nullptr;
-//             }
-//         }
-//     }
-// }
-
 Board::Board(const Board& other) : boardSize(other.boardSize), player1(nullptr), player2(nullptr), whiteKing(nullptr), blackKing(nullptr) {
     pieces = new Piece**[boardSize];
     for (int i = 0; i < boardSize; ++i) {
@@ -224,78 +206,8 @@ Piece* Board::createPiece(char symbol, int row, int col) {
 }
 
 
-// void Board::makeMove(int row, int col, int newRow, int newCol) {
-//     Piece* piece = getPiece(row, col);
-
-
-//     // check castling 
-//     if ((piece->getSymbol() == 'K' || piece->getSymbol() == 'k') && abs(newCol - col) == 2) {
-//         bool isKingSide = (newCol == col + 2);
-//         int rookCol = isKingSide ? 7 : 0;
-//         int newRookCol = isKingSide ? newCol - 1 : newCol + 1;
-
-//         Piece* rook = getPiece(row, rookCol);
-//         pieces[row][newRookCol] = rook;
-//         pieces[row][rookCol] = new Empty(row, rookCol, '-', -1);
-//         rook->setCol(newRookCol);
-
-//         pieces[newRow][newCol] = piece;
-//         pieces[row][col] = new Empty(row, col, '-', -1);
-//         piece->setRow(newRow);
-//         piece->setCol(newCol);
-
-//         King* k = dynamic_cast<King*>(piece);
-//         Rook* r = dynamic_cast<Rook*>(rook);
-//         if (k) k->setHasMoved(true);
-//         if (r) r->setHasMoved(true);
-
-//         return;
-//     }
-
-//     // check en passant
-//     if ((piece->getSymbol() == 'P' || piece->getSymbol() == 'p') && col != newCol && getPiece(newRow, newCol)->getSymbol() == '-') {
-//         captureEnPassant(row, col, newRow, newCol);
-//         resetEnPassantTarget();
-//         return;
-//     }
-
-//     // make move
-//     Piece* newPiece = createPiece(piece->getSymbol(), newRow, newCol);
-//     if (pieces[newRow][newCol] != nullptr) {
-//         delete pieces[newRow][newCol];
-//     }
-//     pieces[newRow][newCol] = newPiece;
-
-//     Piece *newEmpty = createPiece('-', row, col);
-//     if (pieces[row][col] != nullptr) {
-//         delete pieces[row][col];
-//     }
-//     pieces[row][col] = newEmpty;
-
-//     // set en passant target
-//     if (Pawn* pawn = dynamic_cast<Pawn*>(newPiece)) {
-//         if (abs(newRow - row) == 2) {
-//             enPassantTarget = std::make_pair((row + newRow) / 2, col);
-//         } else {
-//             resetEnPassantTarget();
-//         }
-//         pawn->setIsFirstMove(false);
-//     } else {
-//         resetEnPassantTarget();
-//     }
-
-//     // set castling/en passant status
-//     if (Rook* rook = dynamic_cast<Rook*>(newPiece)) {
-//         rook->setHasMoved(true);
-//     } else if (King* king = dynamic_cast<King*>(newPiece)) {
-//         king->setHasMoved(true);
-//     }
-// }
-
 void Board::makeMove(int row, int col, int newRow, int newCol) {
     Piece* piece = getPiece(row, col);
-
-    std::cout << "Attempting to move piece: " << piece->getSymbol() << " from (" << row << ", " << col << ") to (" << newRow << ", " << newCol << ")" << std::endl;
 
     // check castling 
     if ((piece->getSymbol() == 'K' || piece->getSymbol() == 'k') && abs(newCol - col) == 2) {
@@ -370,8 +282,6 @@ void Board::makeMove(int row, int col, int newRow, int newCol) {
     } else if (King* king = dynamic_cast<King*>(newPiece)) {
         king->setHasMoved(true);
     }
-
-    std::cout << "Move completed" << std::endl;
 }
 
 
