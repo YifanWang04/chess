@@ -3,6 +3,7 @@
 #include <ctime>
 #include <vector>
 #include <tuple>
+#include <iostream>
 
 Level3::Level3(int color) : Computer(color, 3) {}
 
@@ -82,7 +83,9 @@ void Level3::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
         gd->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
         gd->notify(fromRow, fromCol, '-');
 
-        cout << *td;
+        std::cout << *td;
         gd->show();
+    } else {
+        std::cout << "No valid moves available." << std::endl;
     }
 }
