@@ -105,6 +105,14 @@ void GraphDisplay::notify(int row, int col, char piece) {
     int x = col * (width / 8);
     int y = (7 - row) * (height / 8);  // Adjusted for white pieces at the bottom
 
+    // Redraw the background color of the square
+    if ((row + col) % 2 == 0) {
+        fillRectangle(x, y, width / 8, height / 8, Light);  // Light color
+    } else {
+        fillRectangle(x, y, width / 8, height / 8, Dark);  // Dark color
+    }
+
+    // Load font
     XFontStruct* font = XLoadQueryFont(d, "-*-helvetica-*-r-bold--48-*-*-*-*-*-*-*");
     if (!font) {
         font = XLoadQueryFont(d, "fixed");
@@ -116,18 +124,19 @@ void GraphDisplay::notify(int row, int col, char piece) {
 
     XSetFont(d, gc, font->fid);
 
-    if (string("PRNBQK").find(piece) != std::string::npos) {
-        XSetForeground(d, gc, WhitePixel(d, s));
-    } else if (string("prnbqk").find(piece) != std::string::npos) {
-        XSetForeground(d, gc, BlackPixel(d, s));
-    }
-
     if (piece != '-') {
+        // Set the color for the piece
+        if (string("PRNBQK").find(piece) != std::string::npos) {
+            XSetForeground(d, gc, WhitePixel(d, s));
+        } else if (string("prnbqk").find(piece) != std::string::npos) {
+            XSetForeground(d, gc, BlackPixel(d, s));
+        }
+
+        // Draw the piece
         string s(1, piece);
         XDrawString(d, w, gc, x + (width / 16) - 12, y + (height / 16) + 12, s.c_str(), s.length());
-    } else {
-        fillRectangle(x, y, width / 8, height / 8, ((row + col) % 2 == 0) ? Light : Dark);
     }
+
     XFreeFont(d, font);
 }
 
