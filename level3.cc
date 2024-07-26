@@ -15,27 +15,28 @@ void Level3::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
     for (int row = 0; row < 8; ++row) {
         for (int col = 0; col < 8; ++col) {
             Piece* piece = board->getPiece(row, col);
-            if (piece->getColor() == getColor()) {
+            if (piece != nullptr && piece->getColor() == getColor()) {
                 for (int newRow = 0; newRow < 8; ++newRow) {
                     for (int newCol = 0; newCol < 8; ++newCol) {
                         if (board->isMoveable(row, col, newRow, newCol, board) && 
                             !board->willSelfBeInCheck(row, col, newRow, newCol)) {
-                            
+
+                            // Save the current state
+                            Piece* originalPiece = board->getPiece(newRow, newCol);
+
                             // Temporarily make the move
-                            Piece* targetPiece = board->getPiece(newRow, newCol);
-                            Piece* movingPiece = board->getPiece(row, col);
                             board->makeMove(row, col, newRow, newCol);
 
                             // Avoiding capture move
-                            if (!movingPiece->isInDanger(*board)) {
+                            if (!piece->isInDanger(*board)) {
                                 avoidingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
                             // Capture move
-                            if (targetPiece->getColor() != -1 && targetPiece->getColor() != piece->getColor()) {
+                            if (originalPiece != nullptr && originalPiece->getColor() != piece->getColor()) {
                                 capturingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
                             // Check move
-                            if (board->willCheckOpponent(newRow, newCol, movingPiece->getRow(), movingPiece->getCol())) {
+                            if (board->willCheckOpponent(newRow, newCol, piece->getRow(), piece->getCol())) {
                                 checkingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
                             // Other move
@@ -45,9 +46,7 @@ void Level3::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
 
                             // Undo the move
                             board->makeMove(newRow, newCol, row, col);
-
-                            // Restore the target piece to its original position
-                            board->pieces[newRow][newCol] = targetPiece;
+                            board->pieces[newRow][newCol] = originalPiece;
                         }
                     }
                 }
