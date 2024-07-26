@@ -416,7 +416,6 @@ int main() {
     delete whitePlayer;
     delete blackPlayer;
     delete customizedBoard;
-    delete scoreboard;
     delete td;
     delete gd;
 
