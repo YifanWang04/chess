@@ -140,12 +140,12 @@ void GraphDisplay::show() {
     XFlush(d);
 }
 
-void GraphDisplay::showAvailableFonts() {
-  int count;
-  char** fnts = XListFonts(d, "*", 10000, &count);
+// void GraphDisplay::showAvailableFonts() {
+//   int count;
+//   char** fnts = XListFonts(d, "*", 10000, &count);
 
-  for (int i = 0; i < count; ++i) cout << fnts[i] << endl;
-}
+//   for (int i = 0; i < count; ++i) cout << fnts[i] << endl;
+// }
 
 void GraphDisplay::loadPieceImage(char piece) {
     // Check if the piece image is already loaded

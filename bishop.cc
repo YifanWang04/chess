@@ -6,7 +6,6 @@ Bishop::Bishop(int row, int col, char symbol, int color)
 
 Bishop::~Bishop() {}
 
-// need paraphrase
 bool Bishop::canMove(int newRow, int newCol, Board& board) {
     
     // Checks if the target position is on the same col

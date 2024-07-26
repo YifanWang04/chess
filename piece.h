@@ -23,7 +23,7 @@ public:
 
     void move(int newRow, int newCol);
     virtual bool canMove(int newRow, int newCol, Board& board) = 0;
-    bool isInDanger(Board &board);
+    bool isInDanger(Board& board);
     void notify(TextDisplay* text);
 
     char getSymbol() const;

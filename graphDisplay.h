@@ -7,7 +7,7 @@
 #include <map>
 
 class GraphDisplay {
-  Display *d;
+  Display* d;
   Window w;
   int s;
   GC gc;
@@ -41,7 +41,7 @@ class GraphDisplay {
   void show();
 
   // Prints the first 10000 available fonts
-  void showAvailableFonts();
+  // void showAvailableFonts();
 
  private:
   // Loads a piece image

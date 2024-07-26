@@ -31,7 +31,6 @@ Board::~Board() {
     delete[] pieces;
     delete player1;
     delete player2;
-    // delete text;
     whiteKing = nullptr;
     blackKing = nullptr;
 }

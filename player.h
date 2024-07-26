@@ -33,7 +33,7 @@ public:
     void setInCheck(bool inCheck);
     bool getInCheck() const;
     void reset();
-    int getColor() const; // Add this method
+    int getColor() const; 
 };
 
 #endif // PLAYER_H
