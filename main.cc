@@ -137,7 +137,7 @@ int main() {
                     td->notify(fromRow, rookFromCol, '-');
 
                     gd->notify(fromRow, rookCol, board->getPiece(fromRow, rookCol)->getSymbol());
-                    gd->notify(fromRow, rookFromCol, '-');
+                    gd->notify(fromRow, fromCol, '-');
 
                     cout << *td;
                     gd->show();
