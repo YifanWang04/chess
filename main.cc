@@ -3,7 +3,8 @@
 #include <sstream>
 #include "board.h"
 #include "human.h"
-#include "level1.h" // Include other levels as needed
+#include "level1.h"
+#include "level2.h"
 #include "textDisplay.h"
 #include "scoreBoard.h"
 #include "graphDisplay.h"
@@ -49,6 +50,8 @@ int main() {
                 int level = white[9] - '0';
                 if (level == 1) {
                     whitePlayer = new Level1(0);
+                } else if (level == 2) {
+                    whitePlayer = new Level2(0);
                 }
                 // Add conditions for other levels if needed
             } else {
@@ -62,6 +65,8 @@ int main() {
                 int level = black[9] - '0';
                 if (level == 1) {
                     blackPlayer = new Level1(1);
+                } else if (level == 2) {
+                    blackPlayer = new Level2(1)
                 }
                 // Add conditions for other levels if needed
             } else {
