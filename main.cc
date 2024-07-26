@@ -2,7 +2,8 @@
 #include <string>
 #include <sstream>
 #include "board.h"
-#include "player.h"
+#include "human.h"
+#include "level1.h" // Include other levels as needed
 #include "textDisplay.h"
 #include "scoreBoard.h"
 #include "graphDisplay.h"
@@ -42,51 +43,57 @@ int main() {
             iss >> white >> black;
             cout << "Setting up game: " << white << " vs " << black << endl;
 
-            if (white == "human" && black == "human") {
-                delete board;
-                delete td;
-                delete gd;
+            delete board;
+            delete td;
+            delete gd;
 
-                if (defaultSetup) {
-                    board = new Board();
-                    td = new TextDisplay();
-                    gd = new GraphDisplay();
-
-                    board->setupBoard(td);
-                    board->setupBoard(gd);
-                } else if (customizedBoard != nullptr) {
-                    board = new Board(*customizedBoard);
-                    td = new TextDisplay();
-                    gd = new GraphDisplay();
-                    
-                    for (int i = 0; i < 8; ++i) {
-                        for (int j = 0; j < 8; ++j) {
-                            td->notify(i, j, board->getPiece(i, j)->getSymbol());
-                            gd->notify(i, j, board->getPiece(i, j)->getSymbol());
-                        }
-                    }
-                }
-
-                whitePlayer = new Player(0);
-                board->player1 = whitePlayer;
-                blackPlayer = new Player(1);
-                board->player2 = blackPlayer;
-
-                gameRunning = true;
-                currentPlayerTurn = 0; // Start with white player
-                cout << *td;
-                gd->clear();
-                gd->initBoard(); // Ensure the board is initialized correctly
-                // Notify all pieces to graphical display
+            if (defaultSetup) {
+                board = new Board();
+                td = new TextDisplay();
+                gd = new GraphDisplay();
+                board->setupBoard(td);
+                board->setupBoard(gd);
+            } else if (customizedBoard != nullptr) {
+                board = new Board(*customizedBoard);
+                td = new TextDisplay();
+                gd = new GraphDisplay();
                 for (int i = 0; i < 8; ++i) {
                     for (int j = 0; j < 8; ++j) {
+                        td->notify(i, j, board->getPiece(i, j)->getSymbol());
                         gd->notify(i, j, board->getPiece(i, j)->getSymbol());
                     }
                 }
-                gd->show();  // Show the entire board at once
-            } else {
-                cout << "Currently only human vs human is supported." << endl;
             }
+
+            if (white == "human") {
+                whitePlayer = new Human(0);
+            } else if (white == "computer1") {
+                whitePlayer = new Level1(0);
+            }
+            // Add conditions for other levels if needed
+
+            if (black == "human") {
+                blackPlayer = new Human(1);
+            } else if (black == "computer1") {
+                blackPlayer = new Level1(1);
+            }
+            // Add conditions for other levels if needed
+
+            board->player1 = whitePlayer;
+            board->player2 = blackPlayer;
+
+            gameRunning = true;
+            currentPlayerTurn = 0; // Start with white player
+            cout << *td;
+            gd->clear();
+            gd->initBoard(); // Ensure the board is initialized correctly
+            // Notify all pieces to graphical display
+            for (int i = 0; i < 8; ++i) {
+                for (int j = 0; j < 8; ++j) {
+                    gd->notify(i, j, board->getPiece(i, j)->getSymbol());
+                }
+            }
+            gd->show();  // Show the entire board at once
         } else if (cmd == "resign") {
             if (!gameRunning) {
                 cout << "No game is currently running." << endl;
