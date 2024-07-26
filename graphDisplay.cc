@@ -43,11 +43,18 @@ void GraphDisplay::notify(int row, int col, char piece) {
     int x = col * cellSize;
     int y = (7 - row) * cellSize;  // Adjusted for white pieces at the bottom
 
+    // Try to load the preferred font
     XFontStruct* font = XLoadQueryFont(display, "-*-helvetica-*-r-bold--24-*-*-*-*-*-*-*");
+    // If the preferred font is not available, try a fallback font
     if (!font) {
-        std::cerr << "Unable to load font\n";
-        return;  // Return if the font cannot be loaded
+        font = XLoadQueryFont(display, "fixed");
     }
+    // If no fonts are available, log an error and return
+    if (!font) {
+        std::cerr << "Unable to load any font\n";
+        return;
+    }
+
     XSetFont(display, gc, font->fid);
 
     if (whitePieces.find(piece) != std::string::npos) {
