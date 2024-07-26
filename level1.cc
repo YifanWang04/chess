@@ -1,40 +1,48 @@
-// #include "level1.h"
-// #include <vector>
-// #include <cstdlib>
-// #include <ctime>
+#include "level1.h"
+#include <cstdlib>
+#include <ctime>
+#include <vector>
 
-// void Level1::makeMove(Board* board) {
-//     std::vector<std::pair<int, int>> possibleMoves;
-//     std::srand(std::time(0));
+Level1::Level1(int color) : Computer(color, 1) {
+    std::srand(std::time(0)); // Seed for random number generation
+}
 
-//     // Loop through the board to collect all legal moves for the computer's pieces
-//     for (int row = 0; row < board->getBoardSize(); ++row) {
-//         for (int col = 0; col < board->getBoardSize(); ++col) {
-//             Piece* piece = board->getPiece(row, col);
-//             if (piece->getColor() == this->color) {
-//                 for (int newRow = 0; newRow < board->getBoardSize(); ++newRow) {
-//                     for (int newCol = 0; newCol < board->getBoardSize(); ++newCol) {
-//                         if (board->isMoveable(row, col, newRow, newCol, board) && 
-//                             !board->willSelfBeInCheck(row, col, newRow, newCol)) {
-//                             possibleMoves.push_back(std::make_pair(row * 8 + col, newRow * 8 + newCol));
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
+void Level1::computerMove(Board *board, TextDisplay *td, GraphDisplay *gd) {
+    std::vector<std::pair<int, int>> moves;
 
-//     // Randomly select a move from the possible moves
-//     if (!possibleMoves.empty()) {
-//         int index = std::rand() % possibleMoves.size();
-//         int from = possibleMoves[index].first;
-//         int to = possibleMoves[index].second;
+    for (int row = 0; row < 8; ++row) {
+        for (int col = 0; col < 8; ++col) {
+            Piece *piece = board->getPiece(row, col);
+            if (piece->getColor() == getColor()) {
+                for (int newRow = 0; newRow < 8; ++newRow) {
+                    for (int newCol = 0; newCol < 8; ++newCol) {
+                        if (board->isMoveable(row, col, newRow, newCol, board) && 
+                            !board->willSelfBeInCheck(row, col, newRow, newCol)) {
+                            moves.push_back(std::make_pair(row * 8 + col, newRow * 8 + newCol));
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-//         int fromRow = from / 8;
-//         int fromCol = from % 8;
-//         int toRow = to / 8;
-//         int toCol = to % 8;
+    if (!moves.empty()) {
+        int randomIndex = std::rand() % moves.size();
+        int from = moves[randomIndex].first;
+        int to = moves[randomIndex].second;
+        int fromRow = from / 8;
+        int fromCol = from % 8;
+        int toRow = to / 8;
+        int toCol = to % 8;
 
-//         board->makeMove(fromRow, fromCol, toRow, toCol);
-//     }
-// }
+        board->makeMove(fromRow, fromCol, toRow, toCol);
+
+        td->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
+        td->notify(fromRow, fromCol, '-');
+
+        gd->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
+        gd->notify(fromRow, fromCol, '-');
+
+        gd->show();
+    }
+}

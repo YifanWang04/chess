@@ -1,15 +1,14 @@
-// #ifndef COMPUTERPLAYER_H
-// #define COMPUTERPLAYER_H
+#ifndef COMPUTER_H
+#define COMPUTER_H
 
-// #include "player.h"
+#include "player.h"
+#include "board.h"
 
-// class ComputerPlayer : public Player {
-// public:
-//     ComputerPlayer(int color, int level);
-//     void makeMove(Board* board) override;
-// private:
-//     int level;
-    
-// };
+class Computer : public Player {
+public:
+    Computer(int color, int level);
+    virtual ~Computer();
+    virtual void computerMove(Board *board, TextDisplay *td, GraphDisplay *gd) = 0; // Pure virtual function
+};
 
-// #endif
+#endif // COMPUTER_H
