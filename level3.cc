@@ -6,7 +6,7 @@
 
 Level3::Level3(int color) : Computer(color, 3) {}
 
-bool Level3::isSafeMove(Board* board, int fromRow, int fromCol, int toRow, int toCol) {
+bool Level3::isSafeAfterMove(Board* board, int fromRow, int fromCol, int toRow, int toCol) {
     // Simulate the move
     Board testBoard(*board);
     testBoard.makeMove(fromRow, fromCol, toRow, toCol);
@@ -16,9 +16,10 @@ bool Level3::isSafeMove(Board* board, int fromRow, int fromCol, int toRow, int t
 }
 
 void Level3::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
-    std::vector<std::tuple<int, int, int, int>> safeMoves;
+    std::vector<std::tuple<int, int, int, int>> bestMoves;
     std::vector<std::tuple<int, int, int, int>> capturingMoves;
     std::vector<std::tuple<int, int, int, int>> checkingMoves;
+    std::vector<std::tuple<int, int, int, int>> safeMoves;
     std::vector<std::tuple<int, int, int, int>> otherMoves;
 
     for (int row = 0; row < 8; ++row) {
@@ -30,18 +31,20 @@ void Level3::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
                         if (board->isMoveable(row, col, newRow, newCol, board) && 
                             !board->willSelfBeInCheck(row, col, newRow, newCol)) {
                             
-                            // Check if the move is safe
-                            if (isSafeMove(board, row, col, newRow, newCol)) {
-                                safeMoves.push_back(std::make_tuple(row, col, newRow, newCol));
-                            }
-                            // Capture move
-                            else if (board->getPiece(newRow, newCol)->getColor() != -1 && 
-                                     board->getPiece(newRow, newCol)->getColor() != piece->getColor()) {
+                            // Capture move and ensure it's safe
+                            if (board->getPiece(newRow, newCol)->getColor() != -1 && 
+                                board->getPiece(newRow, newCol)->getColor() != piece->getColor() &&
+                                isSafeAfterMove(board, row, col, newRow, newCol)) {
                                 capturingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
-                            // Check move
-                            else if (board->willCheckOpponent(row, col, newRow, newCol)) {
+                            // Check move and ensure it's safe
+                            else if (board->willCheckOpponent(row, col, newRow, newCol) &&
+                                     isSafeAfterMove(board, row, col, newRow, newCol)) {
                                 checkingMoves.push_back(std::make_tuple(row, col, newRow, newCol));
+                            }
+                            // Safe move
+                            else if (isSafeAfterMove(board, row, col, newRow, newCol)) {
+                                safeMoves.push_back(std::make_tuple(row, col, newRow, newCol));
                             }
                             // Other move
                             else {
@@ -54,22 +57,21 @@ void Level3::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
         }
     }
 
-    // Prefer safe moves, then capturing moves, then checking moves, and lastly other moves
-    std::vector<std::tuple<int, int, int, int>>* chosenMoves = nullptr;
-    if (!safeMoves.empty()) {
-        chosenMoves = &safeMoves;
-    } else if (!capturingMoves.empty()) {
-        chosenMoves = &capturingMoves;
+    // Prefer capturing moves, then checking moves, then safe moves, and lastly other moves
+    if (!capturingMoves.empty()) {
+        bestMoves = capturingMoves;
     } else if (!checkingMoves.empty()) {
-        chosenMoves = &checkingMoves;
+        bestMoves = checkingMoves;
+    } else if (!safeMoves.empty()) {
+        bestMoves = safeMoves;
     } else {
-        chosenMoves = &otherMoves;
+        bestMoves = otherMoves;
     }
 
-    if (chosenMoves != nullptr && !chosenMoves->empty()) {
+    if (!bestMoves.empty()) {
         std::srand(std::time(nullptr));
-        int moveIndex = std::rand() % chosenMoves->size();
-        auto move = (*chosenMoves)[moveIndex];
+        int moveIndex = std::rand() % bestMoves.size();
+        auto move = bestMoves[moveIndex];
 
         int fromRow = std::get<0>(move);
         int fromCol = std::get<1>(move);

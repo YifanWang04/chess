@@ -10,7 +10,7 @@ public:
     Level3(int color);
     void computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) override;
 private:
-    bool isSafeMove(Board* board, int fromRow, int fromCol, int toRow, int toCol);
+    bool isSafeAfterMove(Board* board, int fromRow, int fromCol, int toRow, int toCol);
 };
 
 #endif // LEVEL3_H
