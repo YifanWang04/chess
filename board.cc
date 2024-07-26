@@ -295,6 +295,8 @@ Piece* Board::createPiece(char symbol, int row, int col) {
 void Board::makeMove(int row, int col, int newRow, int newCol) {
     Piece* piece = getPiece(row, col);
 
+    std::cout << "Attempting to move piece: " << piece->getSymbol() << " from (" << row << ", " << col << ") to (" << newRow << ", " << newCol << ")" << std::endl;
+
     // check castling 
     if ((piece->getSymbol() == 'K' || piece->getSymbol() == 'k') && abs(newCol - col) == 2) {
         std::cout << "Castling detected" << std::endl;
@@ -307,18 +309,10 @@ void Board::makeMove(int row, int col, int newRow, int newCol) {
         pieces[row][rookCol] = new Empty(row, rookCol, '-', -1);
         rook->setCol(newRookCol);
 
-        // Update GraphDisplay for rook
-        gd->notify(row, newRookCol, rook->getSymbol());
-        gd->notify(row, rookCol, '-');
-
         pieces[newRow][newCol] = piece;
         pieces[row][col] = new Empty(row, col, '-', -1);
         piece->setRow(newRow);
         piece->setCol(newCol);
-
-        // Update GraphDisplay for king
-        gd->notify(newRow, newCol, piece->getSymbol());
-        gd->notify(row, col, '-');
 
         King* k = dynamic_cast<King*>(piece);
         if (k) {
@@ -378,8 +372,8 @@ void Board::makeMove(int row, int col, int newRow, int newCol) {
     }
 
     std::cout << "Move completed" << std::endl;
-   
 }
+
 
 
 
