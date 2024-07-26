@@ -5,7 +5,6 @@
 #include "human.h"
 #include "level1.h"
 #include "level2.h"
-// #include "level3.h" // Include level3
 #include "textDisplay.h"
 #include "scoreBoard.h"
 #include "graphDisplay.h"
@@ -53,11 +52,7 @@ int main() {
                     whitePlayer = new Level1(0);
                 } else if (level == 2) {
                     whitePlayer = new Level2(0);
-                } 
-                // else if (level == 3) {
-                //     whitePlayer = new Level3(0);
-                // }
-                // Add conditions for other levels if needed
+                }
             } else {
                 cout << "Invalid player type for white player. Must be 'human' or 'computer[1-4]'." << endl;
                 continue;
@@ -71,11 +66,7 @@ int main() {
                     blackPlayer = new Level1(1);
                 } else if (level == 2) {
                     blackPlayer = new Level2(1);
-                } 
-                // else if (level == 3) {
-                //     blackPlayer = new Level3(1);
-                // }
-                // Add conditions for other levels if needed
+                }
             } else {
                 cout << "Invalid player type for black player. Must be 'human' or 'computer[1-4]'." << endl;
                 continue;
@@ -96,7 +87,7 @@ int main() {
                 board = new Board(*customizedBoard);
                 td = new TextDisplay();
                 gd = new GraphDisplay();
-                
+
                 for (int i = 0; i < 8; ++i) {
                     for (int j = 0; j < 8; ++j) {
                         td->notify(i, j, board->getPiece(i, j)->getSymbol());
@@ -107,7 +98,6 @@ int main() {
 
             board->player1 = whitePlayer;
             board->player2 = blackPlayer;
-            
 
             gameRunning = true;
             currentPlayerTurn = 0; // Start with white player
@@ -129,10 +119,10 @@ int main() {
 
             if (currentPlayerTurn == 0) {
                 cout << "Black wins!" << endl;
-                scoreboard.endGame("Black");
+                scoreboard.endGame("black");
             } else if (currentPlayerTurn == 1) {
                 cout << "White wins!" << endl;
-                scoreboard.endGame("White");
+                scoreboard.endGame("white");
             }
             gameRunning = false;
         } else if (cmd == "move") {
@@ -152,7 +142,7 @@ int main() {
                 if (board->inCheckmate(currentPlayerTurn)) {
                     scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
                     gameRunning = false;
-                } 
+                }
                 if (board->inStalemate(currentPlayerTurn)) {
                     scoreboard.endGame();
                     gameRunning = false;
@@ -278,36 +268,17 @@ int main() {
                     if (board->inCheckmate(currentPlayerTurn)) {
                         scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
                         gameRunning = false;
-                    } 
+                    }
                     if (board->inStalemate(currentPlayerTurn)) {
                         scoreboard.endGame();
                         gameRunning = false;
                     }
-                    
+
                 } else {
                     cout << "Move is not valid for this piece" << endl;
                     continue;
                 }
                 cout << "Moved" << endl;
-
-                // // After human move, if it's computer's turn, make the move immediately
-                // while (gameRunning && (dynamic_cast<Computer*>(currentPlayerTurn == 0 ? whitePlayer : blackPlayer))) {
-                //     Player* currentPlayer = (currentPlayerTurn == 0) ? whitePlayer : blackPlayer;
-                //     currentPlayer->computerMove(board, td, gd);
-                //     currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
-                //     board->inCheck(currentPlayerTurn);
-
-                //     // Check for end conditions
-                //     if (board->inCheckmate(currentPlayerTurn)) {
-                //         scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
-                //         gameRunning = false;
-                //     }
-                //     if (board->inStalemate(currentPlayerTurn)) {
-                //         scoreboard.endGame();
-                //         gameRunning = false;
-                //     }
-                //     cout << "Moved" << endl;
-                // }
             }
         } else if (cmd == "setup") {
             if (gameRunning) {
@@ -361,7 +332,7 @@ int main() {
                         cout << "Pawns cannot be placed on the first or last row." << endl;
                         continue;
                     }
-                    
+
                     // check king
                     if (piece == 'k' && !blackKingExist) {
                         blackKingExist = true;
