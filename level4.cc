@@ -3,28 +3,24 @@
 #include <vector>
 #include <tuple>
 #include <limits>
-#include <algorithm>
 
 Level4::Level4(int color) : Computer(color, 4) {}
 
 void Level4::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
+    std::vector<std::tuple<int, int, int, int>> allMoves = getAllPossibleMoves(board, getColor());
     int bestValue = std::numeric_limits<int>::min();
     std::tuple<int, int, int, int> bestMove;
 
-    std::vector<std::tuple<int, int, int, int>> allMoves = getAllPossibleMoves(board, getColor());
     for (auto move : allMoves) {
         int fromRow = std::get<0>(move);
         int fromCol = std::get<1>(move);
         int toRow = std::get<2>(move);
         int toCol = std::get<3>(move);
 
-        Board tempBoard = *board;
-        tempBoard.makeMove(fromRow, fromCol, toRow, toCol);
+        int moveValue = evaluateMove(board, fromRow, fromCol, toRow, toCol);
 
-        int boardValue = minimax(&tempBoard, 3, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), false);
-
-        if (boardValue > bestValue) {
-            bestValue = boardValue;
+        if (moveValue > bestValue) {
+            bestValue = moveValue;
             bestMove = move;
         }
     }
@@ -42,78 +38,6 @@ void Level4::computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) {
 
     std::cout << *td;
     gd->show();
-}
-
-int Level4::minimax(Board* board, int depth, int alpha, int beta, bool maximizingPlayer) {
-    if (depth == 0) {
-        return evaluateBoard(board);
-    }
-
-    std::vector<std::tuple<int, int, int, int>> allMoves = getAllPossibleMoves(board, maximizingPlayer ? getColor() : 1 - getColor());
-
-    if (maximizingPlayer) {
-        int maxEval = std::numeric_limits<int>::min();
-        for (auto move : allMoves) {
-            int fromRow = std::get<0>(move);
-            int fromCol = std::get<1>(move);
-            int toRow = std::get<2>(move);
-            int toCol = std::get<3>(move);
-
-            Board tempBoard = *board;
-            tempBoard.makeMove(fromRow, fromCol, toRow, toCol);
-            int eval = minimax(&tempBoard, depth - 1, alpha, beta, false);
-            maxEval = std::max(maxEval, eval);
-            alpha = std::max(alpha, eval);
-            if (beta <= alpha) {
-                break;
-            }
-        }
-        return maxEval;
-    } else {
-        int minEval = std::numeric_limits<int>::max();
-        for (auto move : allMoves) {
-            int fromRow = std::get<0>(move);
-            int fromCol = std::get<1>(move);
-            int toRow = std::get<2>(move);
-            int toCol = std::get<3>(move);
-
-            Board tempBoard = *board;
-            tempBoard.makeMove(fromRow, fromCol, toRow, toCol);
-            int eval = minimax(&tempBoard, depth - 1, alpha, beta, true);
-            minEval = std::min(minEval, eval);
-            beta = std::min(beta, eval);
-            if (beta <= alpha) {
-                break;
-            }
-        }
-        return minEval;
-    }
-}
-
-int Level4::evaluateBoard(Board* board) {
-    int score = 0;
-    int pieceValue[256];
-    pieceValue['P'] = 100;
-    pieceValue['R'] = 500;
-    pieceValue['N'] = 320;
-    pieceValue['B'] = 330;
-    pieceValue['Q'] = 900;
-    pieceValue['K'] = 20000;
-    pieceValue['p'] = -100;
-    pieceValue['r'] = -500;
-    pieceValue['n'] = -320;
-    pieceValue['b'] = -330;
-    pieceValue['q'] = -900;
-    pieceValue['k'] = -20000;
-
-    for (int row = 0; row < 8; ++row) {
-        for (int col = 0; col < 8; ++col) {
-            Piece* piece = board->getPiece(row, col);
-            char symbol = piece->getSymbol();
-            score += pieceValue[symbol];
-        }
-    }
-    return score;
 }
 
 std::vector<std::tuple<int, int, int, int>> Level4::getAllPossibleMoves(Board* board, int color) {
@@ -134,4 +58,49 @@ std::vector<std::tuple<int, int, int, int>> Level4::getAllPossibleMoves(Board* b
         }
     }
     return moves;
+}
+
+int Level4::evaluateMove(Board* board, int fromRow, int fromCol, int toRow, int toCol) {
+    int score = 0;
+    Piece* targetPiece = board->getPiece(toRow, toCol);
+
+    // Value capturing opponent pieces
+    if (targetPiece->getSymbol() != '-') {
+        score += getPieceValue(targetPiece);
+    }
+
+    // Avoid moving into danger
+    Board tempBoard = *board;
+    tempBoard.makeMove(fromRow, fromCol, toRow, toCol);
+    if (isKingInDanger(&tempBoard, getColor())) {
+        score -= 200;
+    }
+
+    // Prefer checks
+    if (board->willCheckOpponent(fromRow, fromCol, toRow, toCol)) {
+        score += 150;
+    }
+
+    return score;
+}
+
+bool Level4::isKingInDanger(Board* board, int color) {
+    return board->inCheck(color);
+}
+
+int Level4::getPieceValue(Piece* piece) {
+    switch (piece->getSymbol()) {
+        case 'P': case 'p':
+            return 1;
+        case 'N': case 'n': case 'B': case 'b':
+            return 3;
+        case 'R': case 'r':
+            return 5;
+        case 'Q': case 'q':
+            return 9;
+        case 'K': case 'k':
+            return 100;
+        default:
+            return 0;
+    }
 }

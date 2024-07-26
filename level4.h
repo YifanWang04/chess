@@ -11,9 +11,10 @@ public:
     void computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) override;
 
 private:
-    int minimax(Board* board, int depth, int alpha, int beta, bool maximizingPlayer);
-    int evaluateBoard(Board* board);
     std::vector<std::tuple<int, int, int, int>> getAllPossibleMoves(Board* board, int color);
+    int evaluateMove(Board* board, int fromRow, int fromCol, int toRow, int toCol);
+    bool isKingInDanger(Board* board, int color);
+    int getPieceValue(Piece* piece);
 };
 
 #endif // LEVEL4_H
