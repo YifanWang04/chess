@@ -57,27 +57,7 @@ GraphDisplay::GraphDisplay(int width, int height): width(width), height(height) 
 
   XSynchronize(d,True);
 
-  void GraphDisplay::notify(int row, int col, char piece) {
-    int x = col * (width / 8);
-    int y = (7 - row) * (height / 8);  // Adjusted for white pieces at the bottom
-
-    // Redraw the background color of the square
-    if ((row + col) % 2 == 0) {
-        fillRectangle(x, y, width / 8, height / 8, Light);  // Light color
-    } else {
-        fillRectangle(x, y, width / 8, height / 8, Dark);  // Dark color
-    }
-
-    // Load and draw the piece image if it exists
-    loadPieceImage(piece);
-    if (piecePixmaps.find(piece) != piecePixmaps.end()) {
-        XSetClipMask(d, gc, pieceMasks[piece]);
-        XSetClipOrigin(d, gc, x, y);
-        XCopyArea(d, piecePixmaps[piece], w, gc, 0, 0, width / 8, height / 8, x, y);
-        XSetClipMask(d, gc, None);
-    }
-}
-    // usleep(1000);
+  usleep(1000);
 }
 
 GraphDisplay::~GraphDisplay() {
@@ -139,7 +119,8 @@ void GraphDisplay::notify(int row, int col, char piece) {
         fillRectangle(x, y, width / 8, height / 8, Dark);  // Dark color
     }
 
-    // Draw the piece image if it exists
+    // Load and draw the piece image if it exists
+    loadPieceImage(piece);
     if (piecePixmaps.find(piece) != piecePixmaps.end()) {
         XSetClipMask(d, gc, pieceMasks[piece]);
         XSetClipOrigin(d, gc, x, y);

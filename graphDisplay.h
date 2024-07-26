@@ -1,5 +1,5 @@
-#ifndef GRAPH_DISPLAY_H
-#define GRAPH_DISPLAY_H
+#ifndef __GRAPH_DISPLAY_H__
+#define __GRAPH_DISPLAY_H__
 #include <X11/Xlib.h>
 #include <X11/xpm.h>
 #include <iostream>
@@ -42,9 +42,6 @@ class GraphDisplay {
 
   // Prints the first 10000 available fonts
   void showAvailableFonts();
-
-    // Loads all piece images at once
-  void preLoadPieceImages();
 
  private:
   // Loads a piece image
