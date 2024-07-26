@@ -9,8 +9,8 @@
 class Board; // Forward declaration
 
 class Player {
+protected:
     int color;
-    // int turn;
     int level;
     bool isPromotion;
     bool isInCheck;
@@ -18,27 +18,22 @@ class Player {
     int lastCol;
     bool inStalemate;
     bool isCheckmate;
-    //Board* board;
 
 public:
     Player(int color);
-    ~Player();
+    virtual ~Player();
     void getPlayer(std::string color);
-    // void cleanPlayers();
     bool checkPromotion() const;
     void promotion();
-    // bool movePiece(int row, int col, int newRow, int newCol, Board *board);
-    void computerMove();
+    virtual void computerMove(Board* board, TextDisplay* td, GraphDisplay* gd) = 0; // Pure virtual
     bool checkMate() const;
     bool checkStalemate() const;
     void setLevel(int level);
     int getLevel() const;
-    // void setTurn(int turn);
-    // int getTurn() const;
     void setInCheck(bool inCheck);
     bool getInCheck() const;
     void reset();
-    int getColor() const;
+    int getColor() const; // Add this method
 };
 
 #endif // PLAYER_H

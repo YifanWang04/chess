@@ -2,6 +2,8 @@
 #define LEVEL1_H
 
 #include "computer.h"
+#include <vector>
+#include <tuple>
 
 class Level1 : public Computer {
 public:
