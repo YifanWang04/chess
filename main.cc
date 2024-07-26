@@ -93,9 +93,6 @@ int main() {
                 continue;
             }
 
-        }
-
-
             board->player1 = whitePlayer;
             board->player2 = blackPlayer;
 
@@ -111,6 +108,26 @@ int main() {
                 }
             }
             gd->show();  // Show the entire board at once
+
+            // If it's the computer's turn, make the move immediately
+            while (gameRunning && (dynamic_cast<Computer*>(currentPlayerTurn == 0 ? whitePlayer : blackPlayer))) {
+                Player* currentPlayer = (currentPlayerTurn == 0) ? whitePlayer : blackPlayer;
+                currentPlayer->computerMove(board, td, gd);
+
+                currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
+                board->inCheck(currentPlayerTurn);
+
+                // Check for end conditions
+                if (board->inCheckmate(currentPlayerTurn)) {
+                    scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
+                    gameRunning = false;
+                }
+                if (board->inStalemate(currentPlayerTurn)) {
+                    scoreboard.endGame();
+                    gameRunning = false;
+                }
+                cout << "Moved" << endl;
+            }
         } else if (cmd == "resign") {
             if (!gameRunning) {
                 cout << "No game is currently running." << endl;
@@ -280,22 +297,6 @@ int main() {
                     continue;
                 }
                 cout << "Moved" << endl;
-            } else if (dynamic_cast<Computer*>(currentPlayer)) {
-                currentPlayer->computerMove(board, td, gd);
-
-                currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
-                board->inCheck(currentPlayerTurn);
-
-                // Check for end conditions
-                if (board->inCheckmate(currentPlayerTurn)) {
-                    scoreboard.endGame(currentPlayerTurn == 0 ? "black" : "white");
-                    gameRunning = false;
-                } 
-                if (board->inStalemate(currentPlayerTurn)) {
-                    scoreboard.endGame();
-                    gameRunning = false;
-                }
-                cout << "Moved" << endl;
             }
         } else if (cmd == "setup") {
             if (gameRunning) {
@@ -425,7 +426,7 @@ int main() {
             cout << "Invalid command." << endl;
         }
 
-        // If it's the computer's turn, make the move
+        // If it's the computer's turn, make the move immediately
         while (gameRunning && (dynamic_cast<Computer*>(currentPlayerTurn == 0 ? whitePlayer : blackPlayer))) {
             Player* currentPlayer = (currentPlayerTurn == 0) ? whitePlayer : blackPlayer;
             currentPlayer->computerMove(board, td, gd);
