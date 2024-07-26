@@ -69,17 +69,30 @@ int main() {
 
             if (white == "human") {
                 whitePlayer = new Human(0);
-            } else if (white == "computer1") {
-                whitePlayer = new Level1(0);
+            } else if (white.substr(0, 8) == "computer" && white.length() == 9 && isdigit(white[8])) {
+                int level = white[8] - '0';
+                if (level == 1) {
+                    whitePlayer = new Level1(0);
+                }
+                // Add conditions for other levels if needed
+            } else {
+                cout << "Invalid player type for white player. Must be 'human' or 'computer[1-4]'." << endl;
+                continue;
             }
-            // Add conditions for other levels if needed
 
             if (black == "human") {
                 blackPlayer = new Human(1);
-            } else if (black == "computer1") {
-                blackPlayer = new Level1(1);
+            } else if (black.substr(0, 8) == "computer" && black.length() == 9 && isdigit(black[8])) {
+                int level = black[8] - '0';
+                if (level == 1) {
+                    blackPlayer = new Level1(1);
+                }
+                // Add conditions for other levels if needed
+            } else {
+                cout << "Invalid player type for black player. Must be 'human' or 'computer[1-4]'." << endl;
+                continue;
             }
-            // Add conditions for other levels if needed
+
 
             board->player1 = whitePlayer;
             board->player2 = blackPlayer;
@@ -249,7 +262,7 @@ int main() {
                     continue;
                 }
                 cout << "Moved" << endl;
-            } else {
+            } else if (dynamic_cast<Computer*>(currentPlayer)) {
                 currentPlayer->computerMove(board, td, gd);
 
                 currentPlayerTurn = (currentPlayerTurn == 0) ? 1 : 0;
