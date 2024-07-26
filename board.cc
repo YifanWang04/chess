@@ -211,7 +211,6 @@ void Board::makeMove(int row, int col, int newRow, int newCol) {
 
     // check castling 
     if ((piece->getSymbol() == 'K' || piece->getSymbol() == 'k') && abs(newCol - col) == 2) {
-        std::cout << "Castling detected" << std::endl;
         bool isKingSide = (newCol == col + 2);
         int rookCol = isKingSide ? 7 : 0;
         int newRookCol = isKingSide ? newCol - 1 : newCol + 1;
@@ -245,7 +244,6 @@ void Board::makeMove(int row, int col, int newRow, int newCol) {
 
     // check en passant
     if ((piece->getSymbol() == 'P' || piece->getSymbol() == 'p') && col != newCol && getPiece(newRow, newCol)->getSymbol() == '-') {
-        std::cout << "En passant detected" << std::endl;
         captureEnPassant(row, col, newRow, newCol);
         resetEnPassantTarget();
         return;
