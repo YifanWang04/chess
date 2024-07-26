@@ -57,12 +57,6 @@ Board::Board(const Board& other) : boardSize(other.boardSize), player1(nullptr),
 
 void Board::setupBoard(TextDisplay* td) {
     for (int i = 0; i < 8; ++i) {
-        for (int j = 0; j < 8; ++j) {
-            delete pieces[i][j];
-            pieces[i][j] = new Empty(i, j, '-', -1);
-        }
-    }
-    for (int i = 0; i < 8; ++i) {
         pieces[1][i] = new Pawn(1, i, 'P', 0); // White pawns
         pieces[6][i] = new Pawn(6, i, 'p', 1); // Black pawns
         td->notify(1, i, 'P');
