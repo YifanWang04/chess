@@ -378,14 +378,8 @@ void Board::makeMove(int row, int col, int newRow, int newCol) {
     }
 
     std::cout << "Move completed" << std::endl;
-
-    // Update GraphDisplay
-    gd->notify(newRow, newCol, newPiece->getSymbol());
-    gd->notify(row, col, '-');
+   
 }
-
-
-
 
 
 
