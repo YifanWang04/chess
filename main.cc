@@ -1,3 +1,4 @@
+// main.cc
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -102,9 +103,6 @@ int main() {
                 }
             }
 
-            board->player1 = whitePlayer;
-            board->player2 = blackPlayer;
-
             gameRunning = true;
             currentPlayerTurn = 0; // Start with white player
             cout << *td;
@@ -192,17 +190,19 @@ int main() {
                         td->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
                         td->notify(fromRow, fromCol, '-');
 
+                        int rookCol = (toCol == fromCol + 2) ? 7 : 0;
+                        int newRookCol = (toCol == fromCol + 2) ? toCol - 1 : toCol + 1;
+                        int rookRow = fromRow;
+
+                        // Update rook position
+                        td->notify(rookRow, newRookCol, board->getPiece(rookRow, newRookCol)->getSymbol());
+                        td->notify(rookRow, rookCol, '-');
+
+                        // Update GraphDisplay
                         gd->notify(toRow, toCol, board->getPiece(toRow, toCol)->getSymbol());
                         gd->notify(fromRow, fromCol, '-');
-
-                        int rookCol = (toCol == fromCol + 2) ? toCol - 1 : toCol + 1;
-                        int rookFromCol = (toCol == fromCol + 2) ? 7 : 0;
-
-                        td->notify(fromRow, rookCol, board->getPiece(fromRow, rookCol)->getSymbol());
-                        td->notify(fromRow, rookFromCol, '-');
-
-                        gd->notify(fromRow, rookCol, board->getPiece(fromRow, rookCol)->getSymbol());
-                        gd->notify(fromRow, fromCol, '-');
+                        gd->notify(rookRow, newRookCol, board->getPiece(rookRow, newRookCol)->getSymbol());
+                        gd->notify(rookRow, rookCol, '-');
 
                         cout << *td;
                         gd->show();
